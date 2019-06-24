@@ -12,6 +12,8 @@ def get_parser():
                             formatter_class=RawTextHelpFormatter)
     parser.add_argument('bids_directory',action = 'store', type=Path,
                         help= 'root folder for your BIDS format data')
+    parser.add_argument('output_directory', action='store', type=Path,
+                        help='directory to store output')
     # bids validation
     p_bids = parser.add_argument_group('Options for BIDS format validation')
     p_bids.add_argument('--participant-label', '--participant_label', action='store', nargs='+',
@@ -50,9 +52,8 @@ def main():
     if not opts.skip_bids_validation:
         print('Validating BIDS format')
         validate_input_dir(exec_env,opts.bids_directory,opts.part_label)
-
     if opts.mni | opts.suvr:
-        initiate_workflow()
+        initiate_workflow(opts.file,opts.output_directory,opts)
     if opts.algorithm:
         print("selected " + str(opts.algorithm) + ' for ICA analysis')
         if opts.ica_component_number:
