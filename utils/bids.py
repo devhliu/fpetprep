@@ -1,3 +1,6 @@
+from bids_validator import BIDSValidator
+import os, json, sys
+from pathlib import Path
 def validate_input_dir(exec_env,bids_dir, participant_label):
     # copied from fmriprep utils.bids
     import tempfile

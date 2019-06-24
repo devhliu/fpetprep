@@ -1,12 +1,12 @@
 #from nipype import Workflow, Node, MapNode, Function
 import nipype.pipeline.engine as pe
-from nipype.interfaces.io import selectFiles, DataSink
+from nipype.interfaces.io import SelectFiles, DataSink
 from os.path import join
 from mni import mni
 from suvr import suvr
 
 def initiate_workflow(input_file_list, output_dir,opts):
-    wf = pe.Workflow(name='pet-preprocessing-workflow',base_dir=join(output_dir,'preprocessing_output')
+    wf = pe.Workflow(name='pet-preprocessing-workflow',base_dir=join(output_dir,'preprocessing_output'))
     if opts.mni:
         mni_node = pe.Node(mni(input=input_file_list),name = 'mni')
     if opts.suvr:

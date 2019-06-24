@@ -10,7 +10,7 @@ from workflow import initiate_workflow
 def get_parser():
     parser = ArgumentParser(description='fPETPrep: PET pre-processing workflow',
                             formatter_class=RawTextHelpFormatter)
-    parser.add_argument('bids_directory',action = 'store', type=Path,
+    parser.add_argument('file_directory',action = 'store', type=Path,
                         help= 'root folder for your BIDS format data')
     parser.add_argument('output_directory', action='store', type=Path,
                         help='directory to store output')
@@ -51,7 +51,7 @@ def main():
     exec_env = os.name
     if not opts.skip_bids_validation:
         print('Validating BIDS format')
-        validate_input_dir(exec_env,opts.bids_directory,opts.part_label)
+        validate_input_dir(exec_env,opts.file_directory,opts.participant_label)
     if opts.mni | opts.suvr:
         initiate_workflow(opts.file,opts.output_directory,opts)
     if opts.algorithm:
