@@ -1,3 +1,4 @@
+from pathlib import Path
 from argparse import ArgumentParser
 from argparse import RawTextHelpFormatter
 from ica import gica
@@ -5,11 +6,11 @@ from ica import gica
 def get_parser():
     parser = ArgumentParser(description='fPETPrep: PET pre-processing workflow',
                             formatter_class=RawTextHelpFormatter)
-    # bids conversion
-    p_bids = parser.add_argument_group('Options for BIDS format conversion & validation')
-    #p_bids.add_argument('--bids-conversion','--bids_conversion',action = 'store_true', default=False,
-    #                    help='converting your data to be in BIDS format')
-    p_bids.add_argument('--bids-validation', '--bids_validation',action='store_true', default=False,
+    parser.add_argument('bids_directory',action = 'store', type=Path,
+                        help= 'root folder for your BIDS format data')
+    # bids validation
+    p_bids = parser.add_argument_group('Options for BIDS format validation')
+    p_bids.add_argument('--skip-bids-validation', '--bids_validation',action='store_true', default=False,
                         help='validating BIDS format data')
     # MNI
     p_mni = parser.add_argument_group('Options for MNI')
@@ -37,8 +38,8 @@ def main():
     #if opts.bids_conversion:
     #    print('converting your data to BIDS format')
 
-    if opts.bids_validation:
-        print('Validating your data are indeed in BIDS format')
+    if opts.skip_bids_validation:
+        print('Skipping BIDS format validation')
      
 
     if opts.infomax:
