@@ -2,7 +2,9 @@ import os
 from pathlib import Path
 from argparse import ArgumentParser
 from argparse import RawTextHelpFormatter
-from ica import gica
+import sys
+from ica import Ica
+from mni import mni
 from utils.bids import validate_input_dir
 from workflow import initiate_workflow
 
@@ -25,7 +27,10 @@ def get_parser():
     p_mni = parser.add_argument_group('Options for MNI')
     p_mni.add_argument('--mni',action = 'store_true', default = False,
                        help = 'perform spatial normalization onto MNI space')
-
+    p_mni.add_argument('--resolution', required='--mni' in sys.argv, action='store',nargs='+',default=[],
+                       choices = ['iso1mm','iso2mm'])
+    p_mni.add_argument('--gaussian_filter',action='store', nargs='+',default=(3,3,3),
+                       help="gaussian filter for smoothing in the format of (x, x, x) where x could be any integer value")
     # SUVR
     p_suvr = parser.add_argument_group('Options for SUVR')
     p_suvr.add_argument('--suvr',action ='store_true',default=False,help='Evaluating standard uptake value ratio')
@@ -36,7 +41,7 @@ def get_parser():
     # ica analysis
     p_ica = parser.add_argument_group('Options for running ICA ')
     p_ica.add_argument('--algorithm', required=False, action ='store',nargs='+',default=[],
-                       choices=['infomax','fastICA','constrained ICA'],
+                       choices=['Infomax','FastICA','Constrained_ICA'],
                        help='which ICA algorithm')
     p_ica.add_argument('--ica-component-number','--ica_component_number',action='store', default=0, type=int,
                        help='specify the number of components')
@@ -49,16 +54,27 @@ def main():
     #if opts.bids_conversion:
     #    print('converting your data to BIDS format')
     exec_env = os.name
+
+    #use default parameters if not specified
+    #MNI related
+    if not opts.type:
+        opts.type = 'pet'
+
+
     if not opts.skip_bids_validation:
         print('Validating BIDS format')
         validate_input_dir(exec_env,opts.file_directory,opts.participant_label)
-    if opts.mni | opts.suvr:
-        initiate_workflow(opts.file,opts.output_directory,opts)
+    if opts.mni:
+        pet_mni = mni(opts)
+        pet_mni.run()
+    if opts.suv:
+        # do something
     if opts.algorithm:
         print("selected " + str(opts.algorithm) + ' for ICA analysis')
         if opts.ica_component_number:
             print('the number of ICA component specified is: ' + str(opts.ica_component_number))
-        gica(opts)
+        pet_ica = Ica(opts)
+        ica_results = pet_ica.run()
     else:
         print("please select a valid analysis")
 
