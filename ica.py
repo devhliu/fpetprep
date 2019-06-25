@@ -1,8 +1,9 @@
 import nipype.interfaces.gift as gift
 import os
+import nibabel as nib
 from os.path import abspath, join, isdir
 from glob import glob
-
+from nilearn.image import concat_imgs
 
 class Ica:
     # TODO: replace the matlab_cmd with whatever path specified in the docker file during installation
@@ -18,20 +19,30 @@ class Ica:
             self.dim = opts.ica_component_number
         self.algorithm_int = self.algo_type[opts.algorithm]
         self.algorithm_name = opts.algorithm
+        if len(self.in_files) > 1:
+            self.process_file = self.combine_multiple_PET_subjects() 
+        else:
+            self.process_file = self.in_files
 
+    def combine_multiple_PET_subjects(self):
+        combined_img = join(self.out_dir,'combined_group.nii.gz')
+        new_img = concat_imgs(self.in_files)
+        nib.save(new_img,combined_img)
+        return combined_img
 
     def run(self):
         # setup GIFT path
         gift.GICACommand.set_mlab_paths(matlab_cmd = self.matlab_cmd, use_mcr = True)
         gc = gift.GICACommand()
-        gc.inputs.in_files = self.in_files
+        gc.inputs.in_files = self.process_file
         gc.inputs.out_dir = self.out_dir
         if self.dim:
             gc.inputs.dim = self.dim
-        print("performing " + str(self.algorithm_nameal) +  " now")
+        print("performing " + str(self.algorithm_name) +  " now")
         gc.inputs.algoType = self.algorithm_int
         gc_results = gc.run()
         return gc_results
 
     def plot_results(self):
         # TODO: figure out how to visualize/summarize the ica results
+        return

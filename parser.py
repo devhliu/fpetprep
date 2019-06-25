@@ -16,6 +16,8 @@ def get_parser():
                         help= 'root folder for your BIDS format data')
     parser.add_argument('output_directory', action='store', type=Path,
                         help='directory to store output')
+    parser.add_argument('type', action='store')
+
     # bids validation
     p_bids = parser.add_argument_group('Options for BIDS format validation')
     p_bids.add_argument('--participant-label', '--participant_label', action='store', nargs='+',
@@ -27,10 +29,10 @@ def get_parser():
     p_mni = parser.add_argument_group('Options for MNI')
     p_mni.add_argument('--mni',action = 'store_true', default = False,
                        help = 'perform spatial normalization onto MNI space')
-    p_mni.add_argument('--resolution', required='--mni' in sys.argv, action='store',nargs='+',default=[],
+    p_mni.add_argument('--resolution', required='--mni' in sys.argv, action='store',default=[],
                        choices = ['iso1mm','iso2mm'])
-    p_mni.add_argument('--gaussian_filter',action='store', nargs='+',default=(3,3,3),
-                       help="gaussian filter for smoothing in the format of (x, x, x) where x could be any integer value")
+    p_mni.add_argument('--gaussian_filter',action='store',type=int,nargs=3,
+                       help="gaussian filter for smoothing in the format of x x x where x could be any integer value")
     # SUVR
     p_suvr = parser.add_argument_group('Options for SUVR')
     p_suvr.add_argument('--suvr',action ='store_true',default=False,help='Evaluating standard uptake value ratio')
@@ -40,7 +42,8 @@ def get_parser():
 
     # ica analysis
     p_ica = parser.add_argument_group('Options for running ICA ')
-    p_ica.add_argument('--algorithm', required=False, action ='store',nargs='+',default=[],
+    p_ica.add_argument('--ica', required=False, action ='store_true')
+    p_ica.add_argument('--algorithm', required=False, action ='store',default=[],
                        choices=['Infomax','FastICA','Constrained_ICA'],
                        help='which ICA algorithm')
     p_ica.add_argument('--ica-component-number','--ica_component_number',action='store', default=0, type=int,
@@ -55,24 +58,22 @@ def main():
     #    print('converting your data to BIDS format')
     exec_env = os.name
 
-    #use default parameters if not specified
-    #MNI related
+    #TODO: use default parameters if not specified
     if not opts.type:
         opts.type = 'pet'
-
-
     if not opts.skip_bids_validation:
         print('Validating BIDS format')
         validate_input_dir(exec_env,opts.file_directory,opts.participant_label)
     if opts.mni:
         pet_mni = mni(opts)
         pet_mni.run()
-    if opts.suv:
+    if opts.suvr:
         # do something
-    if opts.algorithm:
+        print("processing SUV")
+    if opts.ica:
         print("selected " + str(opts.algorithm) + ' for ICA analysis')
         if opts.ica_component_number:
-            print('the number of ICA component specified is: ' + str(opts.ica_component_number))
+            print('the number of ICA component: ' + str(opts.ica_component_number))
         pet_ica = Ica(opts)
         ica_results = pet_ica.run()
     else:

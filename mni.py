@@ -23,7 +23,7 @@ class mni:
         self.normalized_nii = [join(self.root_dir,'mni_normalize', basename(file)) for file in self.input_nii]
         self.smoothed_nii = [join(self.root_dir,'mni_gaussian', basename(file)) for file in self.normalized_nii]
         self.intensity_norm_nii = [join(self.root_dir,'mni_intensity_norm', basename(file)) for file in self.smoothed_nii]
-        self.gaussian_filter = (3, 3, 3)
+        self.gaussian_filter = tuple(opts.gaussian_filter)
         '''if opts.save_intermediate_files:
                     self.save_intermediate_files = opts.save_intermediate_files
                     #uncomment this when its actually implemented (rm the related directory)
@@ -40,6 +40,11 @@ class mni:
 
 
     def run(self):
+            print(str(self.input_nii))
+            print(str(self.normalized_nii))
+            print(str(self.smoothed_nii))
+            print(str(self.intensity_norm_nii))
+            
             # TODO: figure out how get_mni152_nii_file works
             # step 1: normalization to mni space
             self.normalization_2_common_space(self.get_mni152_nii_file())
@@ -56,7 +61,7 @@ class mni:
 
 
     def normalization_2_common_space(self, mni_nii_file):
-        for (input_nii_file,output_nii_file) in (self.input_nii, self.normalized_nii):
+        for (input_nii_file,output_nii_file) in zip(self.input_nii, self.normalized_nii):
             nib_img = nib.load(input_nii_file)
             print('run %s' % (input_nii_file))
             if len(nib_img.shape) > 3:
@@ -90,7 +95,7 @@ class mni:
                 nib_3d_imgs[0].to_filename(output_nii_file)
             if os.path.isdir(dyn_3d_nib_in_root): shutil.rmtree(dyn_3d_nib_in_root)
             if os.path.isdir(dyn_3d_nib_out_root): shutil.rmtree(dyn_3d_nib_out_root)
-            return
+        return
 
     def smooth_gaussian(self):
         """
@@ -100,7 +105,7 @@ class mni:
         :return:
         """
         gaussian_filter = self.gaussian_filter
-        for (input_nii_file, output_nii_file) in (self.normalized_nii,self.smoothed_nii):
+        for (input_nii_file, output_nii_file) in zip(self.normalized_nii,self.smoothed_nii):
             print('run gaussian smooth %s' % (input_nii_file))
             nib_img = nib.load(input_nii_file)
             if len(nib_img.shape) > 3:
@@ -134,7 +139,7 @@ class mni:
         return
 
     def normalization_intensity(self):
-        for (input_nii_file, output_nii_file) in (self.smoothed_nii, self.intensity_norm_nii):
+        for (input_nii_file, output_nii_file) in zip(self.smoothed_nii, self.intensity_norm_nii):
             print('run intensity normalization %s' % (input_nii_file))
             nib_img = nib.load(input_nii_file)
             if len(nib_img.shape) > 3:
