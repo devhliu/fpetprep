@@ -31,9 +31,10 @@ class Dcm2bids:
         dump_series2xlsx(self.dicom_root,self.xlsx_file,self.mode)
         # TODO: add flag to use existing excel file without regenerating it
         self.bids_func_info = dump_xlsx2dict(self.xlsx_file)
-        generic_file_list, suvbw_file_list = self.convert_uih_dcm_2_bids()
-        self.generic_file_list = generic_file_list
-        self.suvbw_file_list =suvbw_file_list
+        #generic_file_list, suvbw_file_list = self.convert_uih_dcm_2_bids()
+        self.convert_uih_dcm_2_bids()
+        #self.generic_file_list = generic_file_list
+        #self.suvbw_file_list =suvbw_file_list
         return
 
     def _diff_datetime(self,datetime_0, datatime_1):
@@ -216,22 +217,22 @@ class Dcm2bids:
             for bids_func in bids_func_info:
                 i = 0
                 for series_description in series_descriptions:
-                    if not bids_func.get('series_description') in series_description: continue
+                    if not bids_func.get('05_SeriesDescription') in series_description: continue
                     print('working on %s - %s' % (sub_name, series_description))
                     try:
                         dyn_sub_name = sub_name
                         dyn_sub_name + '-{:02d}'.format(i)
                         series_dicom_root = os.path.join(patient_root, series_description)
-                        if bids_func.get('type') != 'PET':
+                        if bids_func.get('10_Type') != 'PET':
                             generic_file_list = self._save_2_generic(series_dicom_root, sub_root, dyn_sub_name,
-                                            func_name=bids_func.get('bids_func_name'),
-                                            task_name=bids_func.get('bids_task_name'),
+                                            func_name=bids_func.get('11_Func'),
+                                            task_name=bids_func.get('12_Task'),
                                             series_name=bids_func.get('type'))
                         else:
                             suvbw_file_list = self._save_2_pet_suv_bqml(series_dicom_root, sub_root, dyn_sub_name,
-                                                 func_name=bids_func.get('bids_func_name'),
-                                                 task_name=bids_func.get('bids_task_name'))
+                                                 func_name=bids_func.get('11_Func'),
+                                                 task_name=bids_func.get('12_Task'))
                         i += 1
                     except:
                         print('failed to convert %s - %s' % (sub_name, series_description))
-        return generic_file_list,suvbw_file_list
+        return 

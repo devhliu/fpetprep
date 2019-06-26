@@ -48,7 +48,9 @@ def dump_series2json(dcm_root, mode='one_per_dir', series_file_pattern='00000001
               '07_Load':[],
               '08_SeriesRoot':[],
               '09_SeriesFiles':[],
-              '10_Type':[]}
+              '10_Type':[],
+              '11_Func':[],
+              '12_Task':[]}
     for subdir, _, files in os.walk(dcm_root):
         if len(files) <= 0: continue
         print('working on %s' % (subdir))
@@ -70,6 +72,8 @@ def dump_series2json(dcm_root, mode='one_per_dir', series_file_pattern='00000001
         subdirs = []
         slices = {}
         series_keys = []
+        tasks = []
+        funcs = []
         for file in r_files:
             dcm_file = os.path.join(subdir, file)
             if not is_dicom(dcm_file): continue
@@ -86,6 +90,10 @@ def dump_series2json(dcm_root, mode='one_per_dir', series_file_pattern='00000001
             else: pid = 'NA'
             if hasattr(ds, 'StudyDate'): sdate = str(ds.StudyDate)
             else: sdate = 'NA'
+            try: func = ds[0x0065,0x102b].value.split('\\')[1]
+            except: func = 'NA'
+            try: task=ds1[0x0065,0x100c].value 
+            except: task = 'NA'
             if hasattr(ds, 'SeriesDescription'): sdecrp = str(ds.SeriesDescription)
             else: sdecrp = 'NA'
             series_key = str(sdecrp + subdir)
@@ -99,6 +107,8 @@ def dump_series2json(dcm_root, mode='one_per_dir', series_file_pattern='00000001
                 acqdatetimes.append(acqdate + acqtime)
                 subdirs.append(subdir)
                 stypes.append(stype)
+                funcs.append(func)
+                tasks.append(task)
             slices[series_key].append(file)
         # append to series
         series['01_PatientName'] += pnames
@@ -109,6 +119,8 @@ def dump_series2json(dcm_root, mode='one_per_dir', series_file_pattern='00000001
         series['07_Load'] += [False] * len(pnames)
         series['08_SeriesRoot'] += subdirs
         series['10_Type'] += stypes
+        series['11_Func'] += funcs
+        series['12_Task'] += tasks
         for series_key in series_keys:
             series['06_NumberofSlices'].append(len(slices[series_key]))
             series['09_SeriesFiles'].append(slices[series_key])

@@ -27,7 +27,7 @@ def get_parser():
                         action='store', type=Path, help='root folder for dicom data')
     p_bids_conversion.add_argument('--excelfile',action='store', required='--convert2bids' in sys.argv, type=Path)
     p_bids_conversion.add_argument('--mode', action='store', required='--convert2bids' in sys.argv,
-                                   choices = ['one per dir','multi_per_dir'])
+                                   choices = ['one_per_dir','multi_per_dir'])
     p_bids_conversion.add_argument('--pattern', action='store', required='--convert2bids' in sys.argv
                                    )
     # bids validation
