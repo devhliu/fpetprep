@@ -2,8 +2,8 @@
 import nipype.pipeline.engine as pe
 from nipype.interfaces.io import SelectFiles, DataSink
 from os.path import join
-from mni import mni
-from suvr import suv
+from mni import Mni
+#from suvr import suv
 
 def initiate_workflow(input_file_list, output_dir,opts):
     wf = pe.Workflow(name='pet-preprocessing-workflow',base_dir=join(output_dir,'preprocessing_output'))

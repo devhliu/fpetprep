@@ -123,7 +123,7 @@ def dump_series2xlsx(dcm_root, xlsx_file, mode='one_per_dir', series_file_patter
     else:
         df = pd.DataFrame(series)
     df.to_excel(xlsx_file)
-    return
+    return df.to_dict()
 
 
 

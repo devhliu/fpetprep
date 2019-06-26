@@ -1,12 +1,13 @@
-import os
+import os,ast
 from os import mkdir
+from os.path import join
 import json
 import math
 import pydicom
 import subprocess
 import numpy as np
 import nibabel as nib
-from .udcmview import  dump_series2xlsx
+from .udcmview import  dump_series2xlsx, dump_xlsx2dict
 from glob import glob
 from datetime import datetime
 from datetime import timedelta
@@ -19,13 +20,16 @@ class Dcm2bids:
         self.dicom_root = opts.dicom_directory
         self.bids_root = opts.bids_directory
         if not os.path.isdir(self.bids_root): mkdir(self.bids_root)
-        self.xlsx_file = opts.excelfile
+        head, tail =os.path.split(opts.excelfile)
+        if not head: self.xlsx_file = join(opts.output_directory,opts.excelfile)
+        else: self.xlsx_file = opts.excelfile
         self.mode = opts.mode
-        self.series_file_pattern = opts.series_file_pattern
+        #self.series_file_pattern = opts.series_file_pattern
         # TODO: figure out how to pass the xlsx file
 
     def run(self):
-        self.bids_func_info = dump_series2xlsx(self.dicom_root,self.xlsx_file,self.mode,self.series_file_pattern)
+        dump_series2xlsx(self.dicom_root,self.xlsx_file,self.mode)
+        self.bids_func_info = dump_xlsx2dict(self.xlsx_file)
         generic_file_list, suvbw_file_list = self.convert_uih_dcm_2_bids()
         self.generic_file_list = generic_file_list
         self.suvbw_file_list =suvbw_file_list

@@ -5,7 +5,7 @@ from argparse import RawTextHelpFormatter
 import sys
 from ica import Ica
 from mni import Mni
-from udcm2bids.udcm2bids import Dcm2bids
+from dcm2bids.udcm2bids import Dcm2bids
 from utils.bids_validate import validate_input_dir
 from workflow import initiate_workflow
 
@@ -17,18 +17,18 @@ def get_parser():
                         help= 'root folder for your BIDS format data')
     parser.add_argument('output_directory', action='store', type=Path,
                         help='directory to store output')
-    parser.add_argument('dicom_directory', required='bids_directory' not in sys.argv,
-                        action='store', type=Path, help='root folder for dicom data')
     parser.add_argument('type', action='store', help='data type (i.e. pet)')
 
     # bids conversion & suv calculation
     #TODO: add help
     p_bids_conversion = parser.add_argument_group('Options for BIDS format conversion')
     p_bids_conversion.add_argument('--convert2bids',action='store_true',default = False)
-    p_bids_conversion.add_argument('--excelfile',action='store', required='--conver2bids' in sys.argv, type=Path)
-    p_bids_conversion.add_argument('--mode', action='store', required='--conver2bids' in sys.argv,
+    parser.add_argument('--dicom_directory', required='--convert2bids' in sys.argv,
+                        action='store', type=Path, help='root folder for dicom data')
+    p_bids_conversion.add_argument('--excelfile',action='store', required='--convert2bids' in sys.argv, type=Path)
+    p_bids_conversion.add_argument('--mode', action='store', required='--convert2bids' in sys.argv,
                                    choices = ['one per dir','multi_per_dir'])
-    p_bids_conversion.add_argument('--pattern', action='store', required='--conver2bids' in sys.argv
+    p_bids_conversion.add_argument('--pattern', action='store', required='--convert2bids' in sys.argv
                                    )
     # bids validation
     p_bids_validate = parser.add_argument_group('Options for BIDS format validation')
