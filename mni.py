@@ -10,14 +10,16 @@ from os.path import join, isdir, basename
 from os import mkdir
 from glob import glob
 
-class mni:
+
+class Mni:
     def __init__(self, opts):
         # TODO: add related parameters to parser.py
         self.type = opts.type
         self.resolution = opts.resolution
-        self.root_dir = opts.file_directory
+        self.root_dir = opts.bids_directory
         self.input_nii = glob(join(self.root_dir, '*.nii.gz'))
-        #TODO: figure out how to specify input directory
+        #TODO: figure out whether we need subdirectory file as well
+        # and how to save those
         # example for input_root: static_suv_niis or dyn_suv_niis
         self.mkdir()
         self.normalized_nii = [join(self.root_dir,'mni_normalize', basename(file)) for file in self.input_nii]

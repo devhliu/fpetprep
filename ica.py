@@ -15,8 +15,11 @@ class Ica:
         self.in_files = glob(join(opts.file_directory, "*.nii.gz"))
         self.out_dir = join(opts.output_directory, 'ica_results')
         if not isdir(self.out_dir): os.mkdir(self.out_dir)
-        if opts.ica_component_number:
+        if opts.ica_component_number != 0:  #if specify # for ica component, then set to estimation
             self.dim = opts.ica_component_number
+            self.do_estimate = 0
+        else:
+            self.do_estimate = 1
         self.algorithm_int = self.algo_type[opts.algorithm]
         self.algorithm_name = opts.algorithm
         if len(self.in_files) > 1:
@@ -36,8 +39,8 @@ class Ica:
         gc = gift.GICACommand()
         gc.inputs.in_files = self.process_file
         gc.inputs.out_dir = self.out_dir
-        if self.dim:
-            gc.inputs.dim = self.dim
+        gc.inputs.dim = self.dim
+        gc.doEstimation = self.do_estimate
         print("performing " + str(self.algorithm_name) +  " now")
         gc.inputs.algoType = self.algorithm_int
         gc_results = gc.run()
