@@ -29,6 +29,7 @@ class Dcm2bids:
 
     def run(self):
         dump_series2xlsx(self.dicom_root,self.xlsx_file,self.mode)
+        # TODO: add flag to use existing excel file without regenerating it
         self.bids_func_info = dump_xlsx2dict(self.xlsx_file)
         generic_file_list, suvbw_file_list = self.convert_uih_dcm_2_bids()
         self.generic_file_list = generic_file_list

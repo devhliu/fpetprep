@@ -73,18 +73,18 @@ def main():
     #TODO: use default parameters if not specified
     if not opts.type:
         opts.type = 'pet'
-    if not opts.skip_bids_validation:
+    elif not opts.skip_bids_validation:
         print('Validating BIDS format')
         validate_input_dir(exec_env,opts.file_directory,opts.participant_label)
-    if opts.mni:
+    elif opts.mni:
         pet_mni = Mni(opts)
         pet_mni.run()
-    if opts.convert2bids:
+    elif opts.convert2bids:
         print("converting to BIDS format")
         cov_2_bids = Dcm2bids(opts)
         cov_2_bids.run()
 
-    if opts.ica:
+    elif opts.ica:
         print("selected " + str(opts.algorithm) + ' for ICA analysis')
         if opts.ica_component_number:
             print('the number of ICA component: ' + str(opts.ica_component_number))

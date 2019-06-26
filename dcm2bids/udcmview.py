@@ -26,7 +26,9 @@ def dump_xlsx2dict(xlsx_file):
     xls = ExcelFile(xlsx_file)
     df = xls.parse(xls.sheet_names[0])
     dict = df.to_dict()
-    return dict
+    dict2list = [{key: value[i] for key, value in dict.items()}
+           for i in range(len(dict['01_PatientName']))]
+    return dict2list
 
 
 def dump_series2json(dcm_root, mode='one_per_dir', series_file_pattern='00000001.dcm'):
@@ -45,7 +47,8 @@ def dump_series2json(dcm_root, mode='one_per_dir', series_file_pattern='00000001
               '06_NumberofSlices':[],
               '07_Load':[],
               '08_SeriesRoot':[],
-              '09_SeriesFiles':[]}
+              '09_SeriesFiles':[],
+              '10_Type':[]}
     for subdir, _, files in os.walk(dcm_root):
         if len(files) <= 0: continue
         print('working on %s' % (subdir))
@@ -60,6 +63,7 @@ def dump_series2json(dcm_root, mode='one_per_dir', series_file_pattern='00000001
         # iterate all found files
         pnames = []
         pids = []
+        stypes = []
         sdates = []
         sdecrps = []
         acqdatetimes = []
@@ -70,6 +74,8 @@ def dump_series2json(dcm_root, mode='one_per_dir', series_file_pattern='00000001
             dcm_file = os.path.join(subdir, file)
             if not is_dicom(dcm_file): continue
             ds = pydicom.read_file(dcm_file)
+            if hasattr(ds,'Modality'): stype = str(ds.Modality)
+            else: stype = 'NA'
             if hasattr(ds, 'AcquisitionDate'): acqdate = str(ds.AcquisitionDate)
             else: acqdate = 'NA'
             if hasattr(ds, 'AcquisitionTime'): acqtime = str(ds.AcquisitionTime)
@@ -92,6 +98,7 @@ def dump_series2json(dcm_root, mode='one_per_dir', series_file_pattern='00000001
                 sdecrps.append(sdecrp)
                 acqdatetimes.append(acqdate + acqtime)
                 subdirs.append(subdir)
+                stypes.append(stype)
             slices[series_key].append(file)
         # append to series
         series['01_PatientName'] += pnames
@@ -101,6 +108,7 @@ def dump_series2json(dcm_root, mode='one_per_dir', series_file_pattern='00000001
         series['05_SeriesDescription'] += sdecrps
         series['07_Load'] += [False] * len(pnames)
         series['08_SeriesRoot'] += subdirs
+        series['10_Type'] += stypes
         for series_key in series_keys:
             series['06_NumberofSlices'].append(len(slices[series_key]))
             series['09_SeriesFiles'].append(slices[series_key])
