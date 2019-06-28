@@ -1,35 +1,41 @@
 import os,ast
 from os import mkdir
-from os.path import join
+from os.path import join, isdir, split, basename
 import json
 import math
 import pydicom
 import subprocess
 import numpy as np
 import nibabel as nib
-from .udcmview import  dump_series2xlsx, dump_xlsx2dict
+from .udcmview import dump_series2xlsx, dump_xlsx2dict
 from glob import glob
 from datetime import datetime
 from datetime import timedelta
 
-from .dcm2niix import dcm2niix
+#from .dcm2niix import dcm2niix
 
 
 class Dcm2bids:
     def __init__(self, opts):
+        if not isdir(opts.dicom_directory):
+            print("please provide a valid directory for dicom files")
+            #TODO: exit the porgram here
+            return
         self.dicom_root = opts.dicom_directory
         self.bids_root = opts.bids_directory
-        if not os.path.isdir(self.bids_root): mkdir(self.bids_root)
-        head, tail =os.path.split(opts.excelfile)
+        if not isdir(self.bids_root): mkdir(self.bids_root)
+        head, tail = split(opts.excel_file_path)
         if not head: self.xlsx_file = join(opts.output_directory,opts.excelfile)
-        else: self.xlsx_file = opts.excelfile
+        else: self.xlsx_file = opts.excel_file_path
         self.mode = opts.mode
+        self.pattern = opts.pattern
         #self.series_file_pattern = opts.series_file_pattern
         # TODO: figure out how to pass the xlsx file
 
+    def generate_excel_file(self):
+        dump_series2xlsx(self.dicom_root, self.xlsx_file, self.mode,self.pattern)
+
     def run(self):
-        dump_series2xlsx(self.dicom_root,self.xlsx_file,self.mode)
-        # TODO: add flag to use existing excel file without regenerating it
         self.bids_func_info = dump_xlsx2dict(self.xlsx_file)
         #generic_file_list, suvbw_file_list = self.convert_uih_dcm_2_bids()
         self.convert_uih_dcm_2_bids()
@@ -118,7 +124,7 @@ class Dcm2bids:
                                      sub_name + '_task-' + task_name + '_PET-BQML.nii.gz')
         if not os.path.exists(bqml_nii_file):
             devnull = open(os.devnull, 'w')
-            subprocess.call([dcm2niix, '-b', 'y', '-z', 'y',
+            subprocess.call(['dcm2niix', '-b', 'y', '-z', 'y',
                              '-f', sub_name + '_task-' + task_name + '_PET-BQML',
                              '-o', func_root, series_dicom_root],
                             stdout=devnull, stderr=subprocess.STDOUT)
@@ -181,7 +187,7 @@ class Dcm2bids:
         generic_file_list.append(nii_file)
         if os.path.exists(nii_file): return generic_file_list
         devnull = open(os.devnull, 'w')
-        subprocess.call([dcm2niix, '-b', 'y', '-z', 'y',
+        subprocess.call(['dcm2niix', '-b', 'y', '-z', 'y',
                          '-f', sub_name + '_task-' + task_name + '_' + series_name,
                          '-o', func_root, series_dicom_root],
                         stdout=devnull, stderr=subprocess.STDOUT)
@@ -205,11 +211,14 @@ class Dcm2bids:
         fmri_pet_study_root = self.bids_root
         bids_func_info = self.bids_func_info
         # find the patient root defined as '*_*_*' - UIH specific exported dicom pattern
-        patient_roots = glob(os.path.join(uih_dcm_root, '*', '*_*_*'))
-        patient_roots += glob(os.path.join(uih_dcm_root, '*', 'Image', '*_*_*'))
+        patient_roots = list(set([os.path.dirname(bids_func_info[i]['08_SeriesRoot'])
+                                  for i in range(len(bids_func_info))]))
+
+        #patient_roots = glob(os.path.join(uih_dcm_root, '*', '*_*_*'))
+        #patient_roots += glob(os.path.join(uih_dcm_root, '*', 'Image', '*_*_*'))
         for patient_root in patient_roots:
             # create sub bids folders
-            patient_name = os.path.basename(patient_root)
+            patient_name = basename(patient_root)
             sub_name = 'sub-' + str(patient_name.split('_')[1])
             sub_root = os.path.join(fmri_pet_study_root, sub_name)
             if not os.path.exists(sub_root): os.mkdir(sub_root)
@@ -217,7 +226,7 @@ class Dcm2bids:
             for bids_func in bids_func_info:
                 i = 0
                 for series_description in series_descriptions:
-                    if not bids_func.get('05_SeriesDescription') in series_description: continue
+                    #if not bids_func.get('05_SeriesDescription') in series_description: continue
                     print('working on %s - %s' % (sub_name, series_description))
                     try:
                         dyn_sub_name = sub_name
@@ -225,9 +234,9 @@ class Dcm2bids:
                         series_dicom_root = os.path.join(patient_root, series_description)
                         if bids_func.get('10_Type') != 'PET':
                             generic_file_list = self._save_2_generic(series_dicom_root, sub_root, dyn_sub_name,
-                                            func_name=bids_func.get('11_Func'),
-                                            task_name=bids_func.get('12_Task'),
-                                            series_name=bids_func.get('type'))
+                                            func_name=str(bids_func.get('11_Func')),
+                                            task_name=str(bids_func.get('12_Task')),
+                                            series_name=str(bids_func.get('10_Type')))
                         else:
                             suvbw_file_list = self._save_2_pet_suv_bqml(series_dicom_root, sub_root, dyn_sub_name,
                                                  func_name=bids_func.get('11_Func'),

@@ -28,6 +28,7 @@ def dump_xlsx2dict(xlsx_file):
     dict = df.to_dict()
     dict2list = [{key: value[i] for key, value in dict.items()}
            for i in range(len(dict['01_PatientName']))]
+
     return dict2list
 
 
@@ -92,7 +93,7 @@ def dump_series2json(dcm_root, mode='one_per_dir', series_file_pattern='00000001
             else: sdate = 'NA'
             try: func = ds[0x0065,0x102b].value.split('\\')[1]
             except: func = 'NA'
-            try: task=ds1[0x0065,0x100c].value 
+            try: task = ds[0x0065,0x100c].value
             except: task = 'NA'
             if hasattr(ds, 'SeriesDescription'): sdecrp = str(ds.SeriesDescription)
             else: sdecrp = 'NA'
