@@ -24,15 +24,15 @@ def get_parser():
     # bids conversion & suv calculation
     #TODO: add help
     p_bids_conversion = parser.add_argument_group('Options for BIDS format conversion')
-    p_bids_conversion.add_argument('--generate_excel_file',action='store_true',default=False,
+    p_bids_conversion.add_argument('--generate_excel_file', action='store_true',default=False,
                                    help='scan through given directory to generate a sample excel file')
     p_bids_conversion.add_argument('--convert2bids', action='store_true', default=False)
     p_bids_conversion.add_argument('--dicom_directory', required='--convert2bids' in sys.argv,
                                    action='store', type=Path, help='root folder for dicom data')
     p_bids_conversion.add_argument('--excel_file_path',action='store', required='--convert2bids' in sys.argv, type=Path)
-    p_bids_conversion.add_argument('--mode', action='store', required='--convert2bids' in sys.argv,
-                                   choices = ['one_per_dir','multi_per_dir'])
-    p_bids_conversion.add_argument('--pattern', action='store', required='--convert2bids' in sys.argv
+    p_bids_conversion.add_argument('--mode', action='store', required='--generate_excel_file' in sys.argv,
+                                   choices = ['one_per_dir', 'multi_per_dir'])
+    p_bids_conversion.add_argument('--pattern', action='store', required='--generate_excel_file' in sys.argv
                                    )
     # bids validation
     p_bids_validate = parser.add_argument_group('Options for BIDS format validation')
@@ -48,7 +48,8 @@ def get_parser():
     p_mni.add_argument('--mni_include_sub_directory', action='store_true', default=False,
                        help='include files in the sub-directory')
     p_mni.add_argument('--resolution', required='--mni' in sys.argv, action='store',default=[],
-                       choices = ['iso1mm','iso2mm']) # TODO: add help
+                       choices = ['iso1mm','iso2mm'])
+    # TODO: add help
     p_mni.add_argument('--gaussian_filter', required = '--mni' in sys.argv, action='store',type=int,nargs=3,
                        help="gaussian filter for smoothing in the format of x x x where x could be any integer value")
     # SUVR
@@ -59,8 +60,8 @@ def get_parser():
     # PVC
     p_pvc = parser.add_argument_group('Options for partial volume correction')
     p_pvc.add_argument('--pvc', action='store_true', default=False, help='perform partial volume correction')
-
-
+    p_pvc.add_argument('--pvc', action='store', Type=int, nargs =3, help='')
+    # TODO: add help
     # ica analysis
     p_ica = parser.add_argument_group('Options for running ICA ')
     p_ica.add_argument('--ica', required=False, action ='store_true')

@@ -233,7 +233,7 @@ class Dcm2bids:
                         dyn_sub_name = sub_name
                         dyn_sub_name + '-{:02d}'.format(i)
                         series_dicom_root = os.path.join(patient_root, series_description)
-                        if bids_func.get('10_Type') != 'PET' and bids_func.get('10_Typ') != 'PT':
+                        if bids_func.get('10_Type') != 'PET' and bids_func.get('10_Type') != 'PT':
                             generic_file_list = self._save_2_generic(series_dicom_root, sub_root, dyn_sub_name,
                                             func_name=str(bids_func.get('11_Func')),
                                             task_name=str(bids_func.get('12_Task')),
