@@ -49,7 +49,7 @@ def get_parser():
                        help='include files in the sub-directory')
     p_mni.add_argument('--resolution', required='--mni' in sys.argv, action='store',default=[],
                        choices = ['iso1mm','iso2mm']) # TODO: add help
-    p_mni.add_argument('--gaussian_filter',action='store',type=int,nargs=3,
+    p_mni.add_argument('--gaussian_filter', required = '--mni' in sys.argv, action='store',type=int,nargs=3,
                        help="gaussian filter for smoothing in the format of x x x where x could be any integer value")
     # SUVR
     p_suvr = parser.add_argument_group('Options for SUVR')

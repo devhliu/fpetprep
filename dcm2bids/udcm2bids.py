@@ -25,7 +25,7 @@ class Dcm2bids:
         self.bids_root = opts.bids_directory
         if not isdir(self.bids_root): mkdir(self.bids_root)
         head, tail = split(opts.excel_file_path)
-        if not head: self.xlsx_file = join(opts.output_directory,opts.excelfile)
+        if not head: self.xlsx_file = join(opts.output_directory,opts.excel_file_path)
         else: self.xlsx_file = opts.excel_file_path
         self.mode = opts.mode
         self.pattern = opts.pattern
@@ -36,6 +36,7 @@ class Dcm2bids:
         dump_series2xlsx(self.dicom_root, self.xlsx_file, self.mode,self.pattern)
 
     def run(self):
+        print(self.xlsx_file)
         self.bids_func_info = dump_xlsx2dict(self.xlsx_file)
         #generic_file_list, suvbw_file_list = self.convert_uih_dcm_2_bids()
         self.convert_uih_dcm_2_bids()
@@ -227,21 +228,21 @@ class Dcm2bids:
                 i = 0
                 for series_description in series_descriptions:
                     #if not bids_func.get('05_SeriesDescription') in series_description: continue
-                    print('working on %s - %s' % (sub_name, series_description))
-                    try:
+                        print('working on %s - %s' % (sub_name, series_description))
+                    #try:
                         dyn_sub_name = sub_name
                         dyn_sub_name + '-{:02d}'.format(i)
                         series_dicom_root = os.path.join(patient_root, series_description)
-                        if bids_func.get('10_Type') != 'PET':
+                        if bids_func.get('10_Type') != 'PET' and bids_func.get('10_Typ') != 'PT':
                             generic_file_list = self._save_2_generic(series_dicom_root, sub_root, dyn_sub_name,
                                             func_name=str(bids_func.get('11_Func')),
                                             task_name=str(bids_func.get('12_Task')),
-                                            series_name=str(bids_func.get('10_Type')))
+                                            series_name=str(bids_func.get('05_SeriesDescription')))
                         else:
                             suvbw_file_list = self._save_2_pet_suv_bqml(series_dicom_root, sub_root, dyn_sub_name,
                                                  func_name=bids_func.get('11_Func'),
                                                  task_name=bids_func.get('12_Task'))
                         i += 1
-                    except:
-                        print('failed to convert %s - %s' % (sub_name, series_description))
+                    #except:
+                     #   print('failed to convert %s - %s' % (sub_name, series_description))
         return 
