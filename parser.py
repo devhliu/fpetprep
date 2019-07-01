@@ -59,7 +59,7 @@ def get_parser():
     # PVC
     p_pvc = parser.add_argument_group('Options for partial volume correction')
     p_pvc.add_argument('--pvc', action='store_true', default=False, help='perform partial volume correction')
-    p_pvc.add_argument('--pvc_mm', action='store', Type=int, nargs =3, help='')  #TODO: fix this later
+    p_pvc.add_argument('--pvc_mm', action='store', type=int, nargs =3, help='')  #TODO: fix this later
     # TODO: add help
     # ica analysis
     p_ica = parser.add_argument_group('Options for running ICA ')
