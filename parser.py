@@ -19,7 +19,6 @@ def get_parser():
                         help= 'root folder for your BIDS format data')
     parser.add_argument('output_directory', action='store', type=Path,
                         help='directory to store output')
-    parser.add_argument('type', action='store', help='data type (i.e. pet)')
 
     # bids conversion & suv calculation
     #TODO: add help
@@ -60,7 +59,7 @@ def get_parser():
     # PVC
     p_pvc = parser.add_argument_group('Options for partial volume correction')
     p_pvc.add_argument('--pvc', action='store_true', default=False, help='perform partial volume correction')
-    p_pvc.add_argument('--pvc', action='store', Type=int, nargs =3, help='')
+    p_pvc.add_argument('--pvc_mm', action='store', Type=int, nargs =3, help='')  #TODO: fix this later
     # TODO: add help
     # ica analysis
     p_ica = parser.add_argument_group('Options for running ICA ')
