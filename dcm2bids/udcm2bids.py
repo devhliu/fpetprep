@@ -223,11 +223,13 @@ class Dcm2bids:
             sub_name = 'sub-' + str(patient_name.split('_')[1])
             sub_root = os.path.join(fmri_pet_study_root, sub_name)
             if not os.path.exists(sub_root): os.mkdir(sub_root)
-            series_descriptions = os.listdir(patient_root)
+            #series_descriptions = os.listdir(patient_root)
+            i = 0
             for bids_func in bids_func_info:
-                i = 0
-                for series_description in series_descriptions:
+                #i = 0
+                #for series_description in series_descriptions:
                     #if not bids_func.get('05_SeriesDescription') in series_description: continue
+                        series_description = bids_func.get('05_SeriesDescription')
                         print('working on %s - %s' % (sub_name, series_description))
                     #try:
                         dyn_sub_name = sub_name

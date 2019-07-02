@@ -48,6 +48,7 @@ def get_parser():
                        help='include files in the sub-directory')
     p_mni.add_argument('--resolution', required='--mni' in sys.argv, action='store',default=[],
                        choices = ['iso1mm','iso2mm'])
+    p_mni.add_argument('--save_intermediate_file', action='store_true', default=False)
     # TODO: add help
     p_mni.add_argument('--gaussian_filter', required = '--mni' in sys.argv, action='store',type=int,nargs=3,
                        help="gaussian filter for smoothing in the format of x x x where x could be any integer value")

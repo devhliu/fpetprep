@@ -13,17 +13,14 @@ from pathlib import Path
 
 class Mni:
     def __init__(self, opts):
-        self.type = 'pet' #TODO:fix this
+        self.type = 'pet' # TODO:fix this
         self.resolution = opts.resolution
         self.input_dir = opts.bids_directory
         self.output_dir = join(opts.bids_directory,'derivatives')
-        if not isdir(self.output_dir):
-            mkdir(self.output_dir)
-            self.make_sub_dir()
+        if not isdir(self.output_dir): mkdir(self.output_dir)
         if opts.mni_include_sub_directory:
             self.input_nii = list(Path(self.input_dir).glob('**/*.nii.gz'))
             self.input_nii = [str(file) for file in self.input_nii]
-            print(str(self.input_nii))
         else:
             self.input_nii = list(glob(join(self.input_dir, '*.nii.gz')))
         #TODO: figure out whether we need subdirectory file as well
@@ -35,19 +32,31 @@ class Mni:
         self.smoothed_nii = [join(self.output_dir,'mni_gaussian', basename(file)) for file in self.normalized_nii]
         self.intensity_norm_nii = [join(self.output_dir,'mni_intensity_norm', basename(file)) for file in self.smoothed_nii]
         #self.dyn_group_nii = join(self.root_dir, 'dyn_group.nii')
+        self.save_intermediate_files = opts.save_intermediate_files
         #if opts.save_intermediate_files:
         #            self.save_intermediate_files = opts.save_intermediate_files
-        #            #uncomment this when its actually implemented (rm the related directory)
         #        else: 
         #            self.save_intermediate_files = True
 
-    def make_sub_dir(self):
+    def generate_file_list(self):
         if not isdir(join(self.output_dir,'mni_normalize')):
             mkdir(join(self.output_dir, 'mni_normalize'))
         if not isdir(join(self.output_dir,'mni_gaussian')):
             mkdir(join(self.output_dir,'mni_gaussian'))
         if not isdir(join(self.output_dir, 'mni_intensity_norm')):
             mkdir(join(self.output_dir, 'mni_intensity_norm'))
+        normalized_nii, smoothed_nii, intensity_norm_nii =[]
+        for file in self.input_nii:
+            file_dir, file_name = os.path.split(file)
+            file_com = file_dir.split(os.sep)
+            root_com = self.input_dir.split(os.sep)
+            new_com = list(set(file_com).difference(root_com))
+            normalized = join(self.input_dir,'derivatives','mni_normalize',*new_com)
+            smoothed = join(self.input_dir, 'derivatives', 'mni_normalize', *new_com)
+            intensity = join(self.input_dir, 'derivatives', 'mni_normalize', *new_com)
+            normalized_nii.append(normalized)
+            smoothed_nii.append(smoothed)
+            intensity_norm_nii.append(intensity)
         #normalized_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_normalize.nii' + splitext(file)[1]) for file in self.input_nii]
         #smoothed_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_gaussian.nii' + splitext(file)[1]) for file in normalized_nii]
         #intensity_norm_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_intensity_norm.nii' + splitext(file)[1]) for file in smoothed_nii]
@@ -58,23 +67,27 @@ class Mni:
 
 
     def run(self):
-            # step 1: normalization to mni space
-            self.normalization_2_common_space(self.get_mni152_nii_file())
-            # step 2: smoothing using gaussian filter = (3, 3, 3)
-            self.smooth_gaussian()
-            # step 3: intensity normalization
-            self.normalization_intensity()
-            # step 4： difference paired? Dyn_group?
-            # TODO: add the 4th step
+        # step 1: normalization to mni space
+        self.normalization_2_common_space()
+        # step 2: smoothing using gaussian filter = (3, 3, 3)
+        self.smooth_gaussian()
+        # step 3: intensity normalization
+        self.normalization_intensity()
+        # step 4： difference paired? Dyn_group?
+        if not self.save_intermediate_files:
+            print('delete intermediate files')
+            # TODO: add the 4th step; add deletion
 
-    def get_mni152_nii_file(self):
+    def get_mni152_nii_file(self,data_type):
         return os.path.join(os.path.dirname(__file__), 'template',
-                            'mni152_' + self.type + '_' + self.resolution + '.nii.gz')
+                            'mni152_' + data_type + '_' + self.resolution + '.nii.gz')
 
 
-    def normalization_2_common_space(self, mni_nii_file):
+    def normalization_2_common_space(self):
         print('normalization')
+
         for (input_nii_file,output_nii_file) in zip(self.input_nii, self.normalized_nii):
+            mni_nii_file = self.get_mni152_nii_file(data_type=)
             nib_img = nib.load(input_nii_file)
             print('run %s' % (input_nii_file))
             if len(nib_img.shape) > 3:
@@ -111,12 +124,6 @@ class Mni:
         return
 
     def smooth_gaussian(self):
-        """
-        :param input_nii_file:
-        :param output_nii_file:
-        :param gaussian_filter:
-        :return:
-        """
         gaussian_filter = self.gaussian_filter
         for (input_nii_file, output_nii_file) in zip(self.normalized_nii,self.smoothed_nii):
             print('run gaussian smooth %s' % (input_nii_file))
