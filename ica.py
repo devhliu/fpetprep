@@ -7,7 +7,6 @@ from nilearn.image import concat_imgs
 
 class Ica:
     # TODO: replace the matlab_cmd with whatever path specified in the docker file during installation
-    # TODO: add an option in the parser.py for the user to specify the path of the specfic GIFT version they want to use
     matlab_cmd = '/usr/local/gift/GroupICA_standalone/run_groupica.sh /usr/local/MATLAB/mcr2016a/v901'
     algo_type = {'Infomax': 1, 'FastICA': 2, 'ERICA': 3, 'SIMBEC': 4, 'EVD': 5, 'JADE': 6,
                  'AMUSE': 7, 'SDD': 8, 'Semi_blind': 9, 'Constrained_ICA': 10}
@@ -30,7 +29,7 @@ class Ica:
     def combine_multiple_PET_subjects(self):
         combined_img = join(self.out_dir,'combined_group.nii.gz')
         new_img = concat_imgs(self.in_files)
-        nib.save(new_img,combined_img)
+        nib.save(new_img, combined_img)
         return combined_img
 
     def run(self):

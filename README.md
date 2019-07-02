@@ -2,7 +2,7 @@ fpetprep
 ==============
 usage
 --------------
-    parser.py [-h] [--generate_excel_file] [--convert2bids]
+      docker run [-h] [--generate_excel_file] [--convert2bids]
                  [--dicom_directory DICOM_DIRECTORY]
                  [--excel_file_path EXCEL_FILE_PATH]
                  [--mode {one_per_dir,multi_per_dir}] [--pattern PATTERN]

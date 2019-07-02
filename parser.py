@@ -59,17 +59,18 @@ def get_parser():
     # PVC
     p_pvc = parser.add_argument_group('Options for partial volume correction')
     p_pvc.add_argument('--pvc', action='store_true', default=False, help='perform partial volume correction')
-    p_pvc.add_argument('--pvc_mm', action='store', type=int, nargs =3, help='')  #TODO: fix this later
+    p_pvc.add_argument('--pvc_mm', action='store', required= '--pvc' in sys.argv, type=int, nargs=3, help='')  #TODO: fix this later
     # TODO: add help
     # ica analysis
     p_ica = parser.add_argument_group('Options for running ICA ')
     p_ica.add_argument('--ica', required=False, action ='store_true')
-    p_ica.add_argument('--algorithm', required=False, action ='store',default='Infomax',
-                       choices=['Infomax','FastICA','Constrained_ICA'],
-                       help='which ICA algorithm') #TODO: could add more choices here
+    p_ica.add_argument('--algorithm', required=False, action ='store', default='Infomax',
+                       choices=['Infomax','FastICA','Constrained_ICA','ERICA', 'SIMBEC', 'EVD', 'JADE','AMUSE', 'SDD', 'Semi_blind'],
+                       help='which ICA algorithm')
     p_ica.add_argument('--ica-component-number','--ica_component_number',action='store', default=0, type=int,
                        help='specify the number of components') #TODO: if 0, then do estimation
     return parser
+
 
 
 def main():
@@ -101,6 +102,8 @@ def main():
             print('the number of ICA component: ' + str(opts.ica_component_number))
         pet_ica = Ica(opts)
         ica_results = pet_ica.run()
+    return
 
 
-main()
+if __name__ == "__main__":
+    main()
