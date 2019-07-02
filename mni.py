@@ -13,44 +13,48 @@ from pathlib import Path
 
 class Mni:
     def __init__(self, opts):
-        self.type = opts.type
+        self.type = 'pet' #TODO:fix this
         self.resolution = opts.resolution
-        self.root_dir = opts.bids_directory
+        self.input_dir = opts.bids_directory
+        self.output_dir = join(opts.bids_directory,'derivatives')
+        if not isdir(self.output_dir):
+            mkdir(self.output_dir)
+            self.make_sub_dir()
         if opts.mni_include_sub_directory:
-            self.input_nii = list(Path(self.root_dir).glob('**/*.nii.gz'))
+            self.input_nii = list(Path(self.input_dir).glob('**/*.nii.gz'))
+            self.input_nii = [str(file) for file in self.input_nii]
+            print(str(self.input_nii))
         else:
-            self.input_nii = list(glob(join(self.root_dir, '*.nii.gz')))
+            self.input_nii = list(glob(join(self.input_dir, '*.nii.gz')))
         #TODO: figure out whether we need subdirectory file as well
         # and how to save those
         # example for input_root: static_suv_niis or dyn_suv_niis
         self.gaussian_filter = tuple(opts.gaussian_filter)
-        self.normalized_nii, self.smoothed_nii, self.intensity_norm_nii = self.get_file_lists()
-        '''
-        self.normalized_nii = [join(self.root_dir,'mni_normalize', basename(file)) for file in self.input_nii]
-        self.smoothed_nii = [join(self.root_dir,'mni_gaussian', basename(file)) for file in self.normalized_nii]
-        self.intensity_norm_nii = [join(self.root_dir,'mni_intensity_norm', basename(file)) for file in self.smoothed_nii]
-        #self.dyn_group_nii = join(self.root_dir, 'dyn_group.nii')'''
-        '''if opts.save_intermediate_files:
-                    self.save_intermediate_files = opts.save_intermediate_files
-                    #uncomment this when its actually implemented (rm the related directory)
-                else: 
-                    self.save_intermediate_files = True'''
+        #self.normalized_nii, self.smoothed_nii, self.intensity_norm_nii = self.get_file_lists()
+        self.normalized_nii = [join(self.output_dir,'mni_normalize', basename(file)) for file in self.input_nii]
+        self.smoothed_nii = [join(self.output_dir,'mni_gaussian', basename(file)) for file in self.normalized_nii]
+        self.intensity_norm_nii = [join(self.output_dir,'mni_intensity_norm', basename(file)) for file in self.smoothed_nii]
+        #self.dyn_group_nii = join(self.root_dir, 'dyn_group.nii')
+        #if opts.save_intermediate_files:
+        #            self.save_intermediate_files = opts.save_intermediate_files
+        #            #uncomment this when its actually implemented (rm the related directory)
+        #        else: 
+        #            self.save_intermediate_files = True
 
-    def get_file_lists(self):
-        '''if not isdir(join(self.root_dir,'mni_normalize')):
-            mkdir(join(self.root_dir, 'mni_normalize'))
-        if not isdir(join(self.root_dir,'mni_gaussian')):
-            mkdir(join(self.root_dir,'mni_gaussian'))
-        if not isdir(join(self.root_dir, 'mni_intensity_norm')):
-            mkdir(join(self.root_dir, 'mni_intensity_norm'))'''
-        self.input_nii = [str(file) for file in self.input_nii]
-        normalized_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_normalize.nii' + splitext(file)[1]) for file in self.input_nii]
-        smoothed_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_gaussian.nii' + splitext(file)[1]) for file in normalized_nii]
-        intensity_norm_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_intensity_norm.nii' + splitext(file)[1]) for file in smoothed_nii]
+    def make_sub_dir(self):
+        if not isdir(join(self.output_dir,'mni_normalize')):
+            mkdir(join(self.output_dir, 'mni_normalize'))
+        if not isdir(join(self.output_dir,'mni_gaussian')):
+            mkdir(join(self.output_dir,'mni_gaussian'))
+        if not isdir(join(self.output_dir, 'mni_intensity_norm')):
+            mkdir(join(self.output_dir, 'mni_intensity_norm'))
+        #normalized_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_normalize.nii' + splitext(file)[1]) for file in self.input_nii]
+        #smoothed_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_gaussian.nii' + splitext(file)[1]) for file in normalized_nii]
+        #intensity_norm_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_intensity_norm.nii' + splitext(file)[1]) for file in smoothed_nii]
         print(normalized_nii) #,smoothed_nii,intensity_norm_nii
-        print('      ')
         print(self.input_nii)
-        return normalized_nii,smoothed_nii,intensity_norm_nii
+        #return normalized_nii,smoothed_nii,intensity_norm_nii
+        return
 
 
     def run(self):

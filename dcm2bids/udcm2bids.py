@@ -184,8 +184,8 @@ class Dcm2bids:
         func_root = os.path.join(sub_root, func_name)
         if not os.path.isdir(func_root): os.mkdir(func_root)
         # check whether exist
-        nii_file = os.path.join(func_root, sub_name + '_task-' + task_name + '_' + series_name + '_.nii.gz')
-        generic_file_list.append(nii_file)
+        nii_file = os.path.join(func_root, sub_name + '_task-' + task_name + '_' + series_name + '.nii.gz')
+        print(str(nii_file))
         if os.path.exists(nii_file): return generic_file_list
         devnull = open(os.devnull, 'w')
         subprocess.call(['dcm2niix', '-b', 'y', '-z', 'y',
