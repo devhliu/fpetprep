@@ -21,24 +21,27 @@ from pandas import ExcelFile
 from glob import glob
 from pydicom.misc import is_dicom
 
-def edit_xlsx(xlsx_file,func, type):
+def edit_xlsx(xlsx_file):
     xls = ExcelFile(xlsx_file)
     df = xls.parse(xls.sheet_names[0])
     descrips = df['05_SeriesDescription'].to_list()
-    func_list = task_list =[]
+    func_list = []
+    task_list = []
     for descrip in descrips:
-        if descrip.find('rest'): task = 'rest'
-        elif descrip.find('t1'): task , func = 't1', 'anat'
-        elif descrip.find('noise'):task = 'noise'
-        if descrip.find('dyn') and descrip.find('pet') : func = 'dynPET'
-        elif descrip.find('pet'): func = 'staticPET'
-        elif descrip.find('bold'): func = 'func'
-        func_list.append(func)
-        task_list.append(task)
+        if descrip.find('t1') != -1:
+            taskName = 't1'
+            funcName = 'anat'
+        if descrip.find('rest') != -1: taskName = 'rest'
+        elif descrip.find('noise') != -1:taskName = 'noise'
+        if descrip.find('dyn') and descrip.find('pet') != -1 :funcName = 'dynPET'
+        elif descrip.find('pet') != -1: funcName = 'staticPET'
+        if descrip.find('bold') != -1:funcName = 'func'
+        func_list.append(funcName)
+        task_list.append(taskName)
     df['11_Func'] = func_list
     df['12_Task'] = task_list
     df.to_excel(xlsx_file)
-    return
+    return func_list, task_list
 
 def dump_xlsx2dict(xlsx_file):
     xls = ExcelFile(xlsx_file)

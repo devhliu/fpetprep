@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="17f8edfb-d2cb-45ac-b506-30344c18e70c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dcm2bids/udcmview.py" beforeDir="false" afterPath="$PROJECT_DIR$/dcm2bids/udcmview.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mni.py" beforeDir="false" afterPath="$PROJECT_DIR$/mni.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -38,11 +36,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/dcm2bids/udcmview.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="234">
-              <caret line="33" column="24" lean-forward="true" selection-start-line="33" selection-start-column="24" selection-end-line="33" selection-end-column="24" />
+            <state relative-caret-position="337">
+              <caret line="51" column="31" lean-forward="true" selection-start-line="23" selection-end-line="51" selection-end-column="31" />
               <folding>
                 <element signature="e#468#477#0" expanded="true" />
               </folding>
@@ -50,7 +48,7 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mni.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="264">
@@ -112,14 +110,14 @@
         <option value="$PROJECT_DIR$/parser.py" />
         <option value="$PROJECT_DIR$/dcm2bids/udcm2bids.py" />
         <option value="$PROJECT_DIR$/ica.py" />
-        <option value="$PROJECT_DIR$/dcm2bids/udcmview.py" />
         <option value="$PROJECT_DIR$/mni.py" />
+        <option value="$PROJECT_DIR$/dcm2bids/udcmview.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="-7" />
-    <option name="width" value="1283" />
+    <option name="width" value="987" />
     <option name="height" value="1047" />
   </component>
   <component name="ProjectView">
@@ -191,8 +189,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="0" width="1283" height="1047" extended-state="0" />
-    <editor active="true" />
+    <frame x="-7" y="0" width="987" height="1047" extended-state="0" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.41324627" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -203,11 +200,11 @@
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" weight="0.32997763" />
-      <window_info anchor="bottom" id="Version Control" order="7" weight="0.32885906" />
-      <window_info anchor="bottom" id="Terminal" order="8" weight="0.25391498" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.3295964" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.32847533" />
+      <window_info anchor="bottom" id="Terminal" order="8" weight="0.25336322" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="10" visible="true" weight="0.42600897" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="10" visible="true" weight="0.32623318" />
       <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -299,6 +296,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/mni.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="264">
+          <caret line="63" column="50" selection-start-line="63" selection-start-column="50" selection-end-line="63" selection-end-column="50" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/dcm2bids/udcm2bids.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2310">
@@ -311,20 +318,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/dcm2bids/udcmview.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="33" column="24" lean-forward="true" selection-start-line="33" selection-start-column="24" selection-end-line="33" selection-end-column="24" />
+        <state relative-caret-position="337">
+          <caret line="51" column="31" lean-forward="true" selection-start-line="23" selection-end-line="51" selection-end-column="31" />
           <folding>
             <element signature="e#468#477#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mni.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="63" column="50" selection-start-line="63" selection-start-column="50" selection-end-line="63" selection-end-column="50" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
           </folding>
         </state>
       </provider>
