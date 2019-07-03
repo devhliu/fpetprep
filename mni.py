@@ -48,17 +48,21 @@ class Mni:
         for file in self.input_nii:
             file_dir, file_name = os.path.split(file)
             file_com = file_dir.split(os.sep)
-            root_com = self.input_dir.split(os.sep)
-            new_com = list(set(file_com).difference(root_com))
-            normalized = join(self.input_dir,'derivatives','mni_normalize',*new_com)
-            smoothed = join(self.input_dir, 'derivatives', 'mni_smoothed', *new_com)
-            intensity = join(self.input_dir, 'derivatives', 'mni_intensity', *new_com)
+            root_com = str(self.input_dir).split(os.sep)
+            #new_com = list(set(file_com).difference(root_com))
+            new_com = [i for i in file_com if i not in root_com]
+            if not os.path.exists(join(self.input_dir,'derivatives','mni_normalize',*new_com)): os.makedirs(join(self.input_dir,'derivatives','mni_normalize',*new_com))
+            if not os.path.exists(join(self.input_dir,'derivatives','mni_smoothed',*new_com)): os.makedirs(join(self.input_dir,'derivatives','mni_smoothed',*new_com))
+            if not os.path.exists(join(self.input_dir,'derivatives','mni_intensity',*new_com)): os.makedirs(join(self.input_dir,'derivatives','mni_intensity',*new_com))
+            normalized = join(self.input_dir,'derivatives','mni_normalize',*new_com,+file_name)
+            smoothed = join(self.input_dir, 'derivatives', 'mni_smoothed', *new_com,+file_name)
+            intensity = join(self.input_dir, 'derivatives', 'mni_intensity', *new_com,file_name)
             normalized_nii.append(normalized)
             smoothed_nii.append(smoothed)
             intensity_norm_nii.append(intensity)
-        # normalized_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_normalize.nii' + splitext(file)[1]) for file in self.input_nii]
-        # smoothed_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_gaussian.nii' + splitext(file)[1]) for file in normalized_nii]
-        # intensity_norm_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_intensity_norm.nii' + splitext(file)[1]) for file in smoothed_nii]
+        # normalized_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_normalize.nii' + splitext(file)[1]) for file in normalized_nii]
+        # smoothed_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_gaussian.nii' + splitext(file)[1]) for file in smoothed_nii]
+        # intensity_norm_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_intensity_norm.nii' + splitext(file)[1]) for file in intensity_norm_nii]
         print(normalized_nii) # smoothed_nii,intensity_norm_nii
         print(self.input_nii)
         # return normalized_nii,smoothed_nii,intensity_norm_nii
@@ -80,11 +84,16 @@ class Mni:
     def get_mni152_nii_file(self,input_file_name):
         base_file_name, _ = splitext(basename(input_file_name))
         json_data = json.load(open(join(dirname(input_file_name),base_file_name.rstrip('.nii') +'.json')))
-        modality = json_data['Modality']
-        if modality == 'PET' or modality == 'PT':
-            data_type = 'pet'
+        if 'Modality' in json_data:
+        	modality = json_data['Modality']
+        	if modality == 'PET' or modality == 'PT':
+            		data_type = 'pet'
+        	else:
+            		data_type = 't1w'
+        elif 'suvbw_factor' in json_data:
+        	data_type = 'pet'
         else:
-            data_type = 't1w'
+                raise ValueError('cannot identify what template to use') # TODO: add parser so that user can specify their own
         return os.path.join(os.path.dirname(__file__), 'template',
                             'mni152_' + data_type + '_' + self.resolution + '.nii.gz')
 
@@ -95,6 +104,7 @@ class Mni:
             mni_nii_file = self.get_mni152_nii_file(input_nii_file)
             nib_img = nib.load(input_nii_file)
             print('run %s' % input_nii_file)
+            print('generate %s' % output_nii_file)
             if len(nib_img.shape) > 3:
                 nib_3d_imgs = nib.four_to_three(nib_img)
             else:
