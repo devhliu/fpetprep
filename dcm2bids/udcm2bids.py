@@ -224,9 +224,9 @@ class Dcm2bids:
             for bids_func in bids_func_info:
                 i = 0
                 for series_description in series_descriptions:
-                        if not bids_func.get('05_SeriesDescription') in series_description: continue
-                        print('working on %s - %s' % (sub_name, series_description))
-                    #try:
+                    if not bids_func.get('05_SeriesDescription') in series_description: continue
+                    print('working on %s - %s' % (sub_name, series_description))
+                    try:
                         dyn_sub_name = sub_name
                         dyn_sub_name + '-{:02d}'.format(i)
                         series_dicom_root = os.path.join(patient_root, series_description)
@@ -240,6 +240,6 @@ class Dcm2bids:
                                                  func_name=bids_func.get('11_Func'),
                                                  task_name=bids_func.get('12_Task'))
                         i += 1
-                    #except:
-                     #   print('failed to convert %s - %s' % (sub_name, series_description))
+                    except:
+                        print('failed to convert %s - %s' % (sub_name, series_description))
         return 

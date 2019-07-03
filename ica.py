@@ -14,7 +14,7 @@ class Ica:
         self.in_files = glob(join(opts.file_directory, "*.nii.gz"))
         self.out_dir = join(opts.output_directory, 'ica_results')
         if not isdir(self.out_dir): os.mkdir(self.out_dir)
-        if opts.ica_component_number != 0:  #if specify # for ica component, then set to estimation
+        if opts.ica_component_number != 0:  # if specify # for ica component, then set to estimation
             self.dim = opts.ica_component_number
             self.do_estimate = 0
         else:

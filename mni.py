@@ -1,19 +1,18 @@
-import os
-import uuid
-import shutil
+import os, uuid
+import shutil, json
 import tempfile
 import subprocess
 import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
-from os.path import join, isdir, basename, splitext
+from os.path import join, isdir, basename, splitext, dirname
 from os import mkdir
 from glob import glob
 from pathlib import Path
 
+
 class Mni:
     def __init__(self, opts):
-        self.type = 'pet' # TODO:fix this
         self.resolution = opts.resolution
         self.input_dir = opts.bids_directory
         self.output_dir = join(opts.bids_directory,'derivatives')
@@ -27,13 +26,13 @@ class Mni:
         # and how to save those
         # example for input_root: static_suv_niis or dyn_suv_niis
         self.gaussian_filter = tuple(opts.gaussian_filter)
-        #self.normalized_nii, self.smoothed_nii, self.intensity_norm_nii = self.get_file_lists()
-        self.normalized_nii = [join(self.output_dir,'mni_normalize', basename(file)) for file in self.input_nii]
-        self.smoothed_nii = [join(self.output_dir,'mni_gaussian', basename(file)) for file in self.normalized_nii]
-        self.intensity_norm_nii = [join(self.output_dir,'mni_intensity_norm', basename(file)) for file in self.smoothed_nii]
-        #self.dyn_group_nii = join(self.root_dir, 'dyn_group.nii')
+        self.normalized_nii, self.smoothed_nii, self.intensity_norm_nii = self.generate_file_list()
+#       self.normalized_nii = [join(self.output_dir,'mni_normalize', basename(file)) for file in self.input_nii]
+#       self.smoothed_nii = [join(self.output_dir,'mni_gaussian', basename(file)) for file in self.normalized_nii]
+#       self.intensity_norm_nii = [join(self.output_dir,'mni_intensity_norm', basename(file)) for file in self.smoothed_nii]
+        # self.dyn_group_nii = join(self.root_dir, 'dyn_group.nii')
         self.save_intermediate_files = opts.save_intermediate_files
-        #if opts.save_intermediate_files:
+        # if opts.save_intermediate_files:
         #            self.save_intermediate_files = opts.save_intermediate_files
         #        else: 
         #            self.save_intermediate_files = True
@@ -45,25 +44,25 @@ class Mni:
             mkdir(join(self.output_dir,'mni_gaussian'))
         if not isdir(join(self.output_dir, 'mni_intensity_norm')):
             mkdir(join(self.output_dir, 'mni_intensity_norm'))
-        normalized_nii, smoothed_nii, intensity_norm_nii =[]
+        normalized_nii = smoothed_nii = intensity_norm_nii = []
         for file in self.input_nii:
             file_dir, file_name = os.path.split(file)
             file_com = file_dir.split(os.sep)
             root_com = self.input_dir.split(os.sep)
             new_com = list(set(file_com).difference(root_com))
             normalized = join(self.input_dir,'derivatives','mni_normalize',*new_com)
-            smoothed = join(self.input_dir, 'derivatives', 'mni_normalize', *new_com)
-            intensity = join(self.input_dir, 'derivatives', 'mni_normalize', *new_com)
+            smoothed = join(self.input_dir, 'derivatives', 'mni_smoothed', *new_com)
+            intensity = join(self.input_dir, 'derivatives', 'mni_intensity', *new_com)
             normalized_nii.append(normalized)
             smoothed_nii.append(smoothed)
             intensity_norm_nii.append(intensity)
-        #normalized_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_normalize.nii' + splitext(file)[1]) for file in self.input_nii]
-        #smoothed_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_gaussian.nii' + splitext(file)[1]) for file in normalized_nii]
-        #intensity_norm_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_intensity_norm.nii' + splitext(file)[1]) for file in smoothed_nii]
-        print(normalized_nii) #,smoothed_nii,intensity_norm_nii
+        # normalized_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_normalize.nii' + splitext(file)[1]) for file in self.input_nii]
+        # smoothed_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_gaussian.nii' + splitext(file)[1]) for file in normalized_nii]
+        # intensity_norm_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_intensity_norm.nii' + splitext(file)[1]) for file in smoothed_nii]
+        print(normalized_nii) # smoothed_nii,intensity_norm_nii
         print(self.input_nii)
-        #return normalized_nii,smoothed_nii,intensity_norm_nii
-        return
+        # return normalized_nii,smoothed_nii,intensity_norm_nii
+        return normalized_nii, smoothed_nii, intensity_norm_nii
 
 
     def run(self):
@@ -78,18 +77,24 @@ class Mni:
             print('delete intermediate files')
             # TODO: add the 4th step; add deletion
 
-    def get_mni152_nii_file(self,data_type):
+    def get_mni152_nii_file(self,input_file_name):
+        base_file_name, _ = splitext(basename(input_file_name))
+        json_data = json.load(open(join(dirname(input_file_name),base_file_name.rstrip('.nii') +'.json')))
+        modality = json_data['Modality']
+        if modality == 'PET' or modality == 'PT':
+            data_type = 'pet'
+        else:
+            data_type = 't1w'
         return os.path.join(os.path.dirname(__file__), 'template',
                             'mni152_' + data_type + '_' + self.resolution + '.nii.gz')
 
 
     def normalization_2_common_space(self):
         print('normalization')
-
         for (input_nii_file,output_nii_file) in zip(self.input_nii, self.normalized_nii):
-            mni_nii_file = self.get_mni152_nii_file(data_type='PET') #TODO: replace it with json info
+            mni_nii_file = self.get_mni152_nii_file(input_nii_file)
             nib_img = nib.load(input_nii_file)
-            print('run %s' % (input_nii_file))
+            print('run %s' % input_nii_file)
             if len(nib_img.shape) > 3:
                 nib_3d_imgs = nib.four_to_three(nib_img)
             else:
@@ -160,7 +165,7 @@ class Mni:
 
     def normalization_intensity(self):
         for (input_nii_file, output_nii_file) in zip(self.smoothed_nii, self.intensity_norm_nii):
-            print('run intensity normalization %s' % (input_nii_file))
+            print('run intensity normalization %s' % input_nii_file)
             nib_img = nib.load(input_nii_file)
             if len(nib_img.shape) > 3:
                 nib_3d_imgs = nib.four_to_three(nib_img)
@@ -209,7 +214,7 @@ class Mni:
             affines.append(nib_img.affine)
         np_img_group = np.mean(np.array(np_imgs_mean), axis=0)
         nib_img = nib.Nifti1Image(np_img_group, affines[0])
-        nib_img.to_filename(join(self.root_dir, 'dyn_group.nii'))
+        nib_img.to_filename(join(self.input_dir, 'dyn_group.nii'))
         return
 
 
