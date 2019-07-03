@@ -87,7 +87,7 @@ class Mni:
         print('normalization')
 
         for (input_nii_file,output_nii_file) in zip(self.input_nii, self.normalized_nii):
-            mni_nii_file = self.get_mni152_nii_file(data_type=)
+            mni_nii_file = self.get_mni152_nii_file(data_type='PET') #TODO: replace it with json info
             nib_img = nib.load(input_nii_file)
             print('run %s' % (input_nii_file))
             if len(nib_img.shape) > 3:

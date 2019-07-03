@@ -214,22 +214,17 @@ class Dcm2bids:
         # find the patient root defined as '*_*_*' - UIH specific exported dicom pattern
         patient_roots = list(set([os.path.dirname(bids_func_info[i]['08_SeriesRoot'])
                                   for i in range(len(bids_func_info))]))
-
-        #patient_roots = glob(os.path.join(uih_dcm_root, '*', '*_*_*'))
-        #patient_roots += glob(os.path.join(uih_dcm_root, '*', 'Image', '*_*_*'))
         for patient_root in patient_roots:
             # create sub bids folders
             patient_name = basename(patient_root)
             sub_name = 'sub-' + str(patient_name.split('_')[1])
             sub_root = os.path.join(fmri_pet_study_root, sub_name)
             if not os.path.exists(sub_root): os.mkdir(sub_root)
-            #series_descriptions = os.listdir(patient_root)
-            i = 0
+            series_descriptions = os.listdir(patient_root)
             for bids_func in bids_func_info:
-                #i = 0
-                #for series_description in series_descriptions:
-                    #if not bids_func.get('05_SeriesDescription') in series_description: continue
-                        series_description = bids_func.get('05_SeriesDescription')
+                i = 0
+                for series_description in series_descriptions:
+                        if not bids_func.get('05_SeriesDescription') in series_description: continue
                         print('working on %s - %s' % (sub_name, series_description))
                     #try:
                         dyn_sub_name = sub_name
