@@ -33,7 +33,7 @@ def edit_xlsx(xlsx_file):
             funcName = 'anat'
         if descrip.find('rest') != -1: taskName = 'rest'
         elif descrip.find('noise') != -1:taskName = 'noise'
-        if descrip.find('dyn') and descrip.find('pet') != -1 :funcName = 'dynPET'
+        if descrip.find('dyn') != -1 and descrip.find('pet') != -1 :funcName = 'dynPET'
         elif descrip.find('pet') != -1: funcName = 'staticPET'
         if descrip.find('bold') != -1:funcName = 'func'
         func_list.append(funcName)

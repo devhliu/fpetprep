@@ -18,7 +18,7 @@ class Mni:
         self.output_dir = join(opts.bids_directory,'derivatives')
         if not isdir(self.output_dir): mkdir(self.output_dir)
         if opts.mni_include_sub_directory:
-            self.input_nii = list(Path(self.input_dir).glob('**/*.nii.gz'))
+            self.input_nii = list(Path(self.input_dir).glob('sub*/*/*.nii.gz'))
             self.input_nii = [str(file) for file in self.input_nii]
         else:
             self.input_nii = list(glob(join(self.input_dir, '*.nii.gz')))
@@ -44,7 +44,9 @@ class Mni:
             mkdir(join(self.output_dir,'mni_gaussian'))
         if not isdir(join(self.output_dir, 'mni_intensity_norm')):
             mkdir(join(self.output_dir, 'mni_intensity_norm'))
-        normalized_nii,smoothed_nii,intensity_norm_nii = []
+        normalized_nii = []
+        smoothed_nii = []
+        intensity_norm_nii = []
         for file in self.input_nii:
             file_dir, file_name = os.path.split(file)
             file_com = file_dir.split(os.sep)
