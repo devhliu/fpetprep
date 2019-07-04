@@ -28,7 +28,14 @@ RUN conda install -c simpleitk simpleitk \
     && conda install -c simpleitk/label/dev simpleitk \
     && conda install -c conda-forge dcm2niix \
     && conda install -c conda-forge pydicom \
-    && conda install -c conda-forge nilearn 
+    && conda install -c conda-forge nilearn \
+    && pip install heudiconv
+
+#install customized version of nipype; move the required files to fpetprep directory and then copy to nipype directory
+RUN cd /usr/local \
+    && git clone https://github.com/nipy/nipype.git \
+    && cp -R /fpetprep/gift nipype/nipype/interfaces/gift \
+    && pip install -e /usr/local/nipype-0.10.0
 
 #install GIFT and MCR
 RUN wget http://mialab.mrn.org/software/gift/software/stand_alone/GroupICATv4.0b_standalone_Linux_x86_64.zip \ 
@@ -39,11 +46,7 @@ RUN wget http://mialab.mrn.org/software/gift/software/stand_alone/GroupICATv4.0b
     && cd /usr/local/MATLAB \
     && ./install -mode silent -agreeToLicense yes -destinationFolder /usr/local/MATLAB \
 
-#install customized version of nipype; move the required files to fpetprep directory and then copy to nipype directory
-RUN cd /usr/local \
-    && git clone https://github.com/nipy/nipype.git \
-    && cp /fpetprep/nipype/interface/gift/* nipype/nipype/interfaces/gift \
-    && pip install -e /usr/local/nipype-0.10.0
+
 
 
 ENTRYPOINT ["python", "parser.py"]

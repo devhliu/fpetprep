@@ -11,9 +11,21 @@ class Ica:
     algo_type = {'Infomax': 1, 'FastICA': 2, 'ERICA': 3, 'SIMBEC': 4, 'EVD': 5, 'JADE': 6,
                  'AMUSE': 7, 'SDD': 8, 'Semi_blind': 9, 'Constrained_ICA': 10}
     def __init__(self,opts):
-        self.in_files = glob(join(opts.file_directory, "*.nii.gz"))
-        self.out_dir = join(opts.output_directory, 'ica_results')
-        if not isdir(self.out_dir): os.mkdir(self.out_dir)
+        if opts.ica_file_directory: 
+            if opts.ica_include_sub_directory:
+                self.in_files = glob(join(opts.ica_file_directory, 'sub*/*',"*.nii.gz"))
+            else:
+                self.in_files = glob(join(opts.ica_file_directory,"*.nii.gz"))
+                # TODO: add list of files option
+        elif opts.ica_file_list:
+            if os.path.exist(opts.ica_file_list):
+                file = open(opts.ica_file_list,'r') 
+                self.in_files = file.read() 
+                file.close() #TODO: test this
+            else:
+                self.in_files = opts.ica_file_list
+        self.out_dir = join(opts.output_directory,'derivatives','ica_results')
+        if not os.path.exists(self.out_dir): os.makedirs(self.out_dir)
         if opts.ica_component_number != 0:  # if specify # for ica component, then set to estimation
             self.dim = opts.ica_component_number
             self.do_estimate = 0
@@ -21,11 +33,13 @@ class Ica:
             self.do_estimate = 1
         self.algorithm_int = self.algo_type[opts.algorithm]
         self.algorithm_name = opts.algorithm
-        if len(self.in_files) > 1:
+        self.modality = opts.ica_modality
+        if self.modality == 'PET':
             self.process_file = self.combine_multiple_PET_subjects() 
         else:
             self.process_file = self.in_files
-
+    
+    
     def combine_multiple_PET_subjects(self):
         combined_img = join(self.out_dir,'combined_group.nii.gz')
         new_img = concat_imgs(self.in_files)
@@ -38,7 +52,8 @@ class Ica:
         gc = gift.GICACommand()
         gc.inputs.in_files = self.process_file
         gc.inputs.out_dir = self.out_dir
-        gc.inputs.dim = self.dim
+        if not self.do_estimate:
+            gc.inputs.dim = self.dim
         gc.doEstimation = self.do_estimate
         print("performing " + str(self.algorithm_name) +  " now")
         gc.inputs.algoType = self.algorithm_int

@@ -15,7 +15,7 @@ class Mni:
     def __init__(self, opts):
         self.resolution = opts.resolution
         self.input_dir = opts.bids_directory
-        self.output_dir = join(opts.bids_directory,'derivatives')
+        self.output_dir = join(opts.output_directory,'derivatives')
         if not isdir(self.output_dir): mkdir(self.output_dir)
         if opts.mni_include_sub_directory:
             self.input_nii = list(Path(self.input_dir).glob('sub*/*/*.nii.gz'))
@@ -40,10 +40,10 @@ class Mni:
     def generate_file_list(self):
         if not isdir(join(self.output_dir,'mni_normalize')):
             mkdir(join(self.output_dir, 'mni_normalize'))
-        if not isdir(join(self.output_dir,'mni_gaussian')):
-            mkdir(join(self.output_dir,'mni_gaussian'))
-        if not isdir(join(self.output_dir, 'mni_intensity_norm')):
-            mkdir(join(self.output_dir, 'mni_intensity_norm'))
+        if not isdir(join(self.output_dir,'mni_smoothed')):
+            mkdir(join(self.output_dir,'mni_smoothed'))
+        if not isdir(join(self.output_dir, 'mni_intensity')):
+            mkdir(join(self.output_dir, 'mni_intensity'))
         normalized_nii = []
         smoothed_nii = []
         intensity_norm_nii = []
@@ -77,11 +77,10 @@ class Mni:
         self.smooth_gaussian()
         # step 3: intensity normalization
         self.normalization_intensity()
-        # step 4： difference paired? Dyn_group?
         if not self.save_intermediate_files:
             print('delete intermediate files')
             os.system("rm -rf join(self.output_dir, 'mni_normalize')")
-            os.system("rm -rf join(self.output_dir, 'mni_gaussian')")
+            os.system("rm -rf join(self.output_dir, 'mni_smoothed')")
             # TODO: add the 4th step; add deletion
 
     def get_mni152_nii_file(self,input_file_name):
@@ -104,10 +103,11 @@ class Mni:
     def normalization_2_common_space(self):
         print('normalization')
         for (input_nii_file,output_nii_file) in zip(self.input_nii, self.normalized_nii):
-            mni_nii_file = self.get_mni152_nii_file(input_nii_file)
-            nib_img = nib.load(input_nii_file)
             print('run %s' % input_nii_file)
             print('generate %s' % output_nii_file)
+            if os.path.exists(output_nii_file): continue
+            mni_nii_file = self.get_mni152_nii_file(input_nii_file)
+            nib_img = nib.load(input_nii_file)
             if len(nib_img.shape) > 3:
                 nib_3d_imgs = nib.four_to_three(nib_img)
             else:
@@ -122,12 +122,13 @@ class Mni:
             dyn_3d_nib_out_files = []
             for dyn_3d_nib_file in dyn_3d_nib_files:
                 dyn_3d_nib_out_file = os.path.join(dyn_3d_nib_out_root, uuid.uuid4().__str__() + '.nii.gz')
+                devnull = open(os.devnull, 'w')
                 subprocess.call(['flirt',
                                  '-in', dyn_3d_nib_file,
                                  '-out', dyn_3d_nib_out_file,
                                  '-ref', mni_nii_file,
                                  '-bins', '256',
-                                 '-dof', '12'])
+                                 '-dof', '12'],stdout=devnull, stderr=subprocess.STDOUT)
                 dyn_3d_nib_out_files.append(dyn_3d_nib_out_file)
             nib_3d_imgs = []
             for dyn_3d_nib_out_file in dyn_3d_nib_out_files:
@@ -145,6 +146,8 @@ class Mni:
         gaussian_filter = self.gaussian_filter
         for (input_nii_file, output_nii_file) in zip(self.normalized_nii,self.smoothed_nii):
             print('run gaussian smooth %s' % (input_nii_file))
+            print('generate %s' % output_nii_file)
+            if os.path.exists(output_nii_file): continue
             nib_img = nib.load(input_nii_file)
             if len(nib_img.shape) > 3:
                 nib_3d_imgs = nib.four_to_three(nib_img)
@@ -179,6 +182,8 @@ class Mni:
     def normalization_intensity(self):
         for (input_nii_file, output_nii_file) in zip(self.smoothed_nii, self.intensity_norm_nii):
             print('run intensity normalization %s' % input_nii_file)
+            print('generate %s' % output_nii_file)
+            if os.path.exists(output_nii_file): continue
             nib_img = nib.load(input_nii_file)
             if len(nib_img.shape) > 3:
                 nib_3d_imgs = nib.four_to_three(nib_img)

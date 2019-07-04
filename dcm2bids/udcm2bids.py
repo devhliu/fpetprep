@@ -2,6 +2,7 @@ import os,ast
 from os import mkdir
 from os.path import join, isdir, split, basename
 import json
+import logging
 import math
 import pydicom
 import subprocess
@@ -23,6 +24,7 @@ class Dcm2bids:
             return
         self.dicom_root = opts.dicom_directory
         self.bids_root = opts.bids_directory
+        self.log_file = join(opts.output_directory,'fpetprep.log')
         if not isdir(self.bids_root): mkdir(self.bids_root)
         head, tail = split(opts.excel_file_path)
         if not head: self.xlsx_file = join(opts.output_directory,opts.excel_file_path)
@@ -64,29 +66,39 @@ class Dcm2bids:
         """
         if ds.Modality != 'PT': return 1.0
         if ds.Manufacturer != 'UIH': return 1.0
+        try:
+            # rescaleScople has been considering when converting to nifti1 format
+            # doseCalibraFactor = float(ds.DoseCalibrationFactor)
+            # rescaleSlope = float(ds.RescaleSlope)
 
-        # rescaleScople has been considering when converting to nifti1 format
-        # doseCalibraFactor = float(ds.DoseCalibrationFactor)
-        # rescaleSlope = float(ds.RescaleSlope)
+            # read SUVbw tags from ds
+            bw_factor = 1000.0
+            decay_factor = 1.0
+            acqDateTime = ds.AcquisitionDateTime
+            patientWeight = float(ds.PatientWeight)
+            radionuclide = ds.RadiopharmaceuticalInformationSequence[0]
+            radionuclideHalfLife = float(radionuclide.RadionuclideHalfLife)
+            radionuclideTotalDose = float(radionuclide.RadionuclideTotalDose)
+            radionuclideStartDateTime = radionuclide.RadiopharmaceuticalStartDateTime
 
-        # read SUVbw tags from ds
-        acqDateTime = ds.AcquisitionDateTime
-        patientWeight = float(ds.PatientWeight)
-        radionuclide = ds.RadiopharmaceuticalInformationSequence[0]
-        radionuclideHalfLife = float(radionuclide.RadionuclideHalfLife)
-        radionuclideTotalDose = float(radionuclide.RadionuclideTotalDose)
-        radionuclideStartDateTime = radionuclide.RadiopharmaceuticalStartDateTime
+            # calculation of bw factor
+            bw_factor = 1000.0 * patientWeight / radionuclideTotalDose
 
-        # calculation of bw factor
-        bw_factor = 1000.0 * patientWeight / radionuclideTotalDose
-
-        # calculation of decay factor
-        acq_datetime_0 = datetime.strptime(str(acqDateTime)[:14], '%Y%m%d%H%M%S')
-        acq_datetime_1 = datetime.strptime(str(radionuclideStartDateTime)[:14], '%Y%m%d%H%M%S')
-        delta_secs = acq_datetime_0 - acq_datetime_1
-        decay_lambda = math.log(2) / radionuclideHalfLife
-        decay_factor = math.exp(decay_lambda * delta_secs.total_seconds())
-
+            # calculation of decay factor
+            acq_datetime_0 = datetime.strptime(str(acqDateTime)[:14], '%Y%m%d%H%M%S')
+            acq_datetime_1 = datetime.strptime(str(radionuclideStartDateTime)[:14], '%Y%m%d%H%M%S')
+            delta_secs = acq_datetime_0 - acq_datetime_1
+            decay_lambda = math.log(2) / radionuclideHalfLife
+            decay_factor = math.exp(decay_lambda * delta_secs.total_seconds())
+        except ZeroDivisionError as err:
+            printMessage = 'Failed to read PET information for %s.'%(ds.PatientName)
+            print(printMessage)
+            logging.basicConfig(filename=self.log_file, level=logging.DEBUG, 
+                    format='%(asctime)s %(levelname)s %(name)s %(message)s')
+            logger=logging.getLogger(__name__)
+            #logger.info( )
+            logger.error(printMessage + '\n\t The specific error is: ' + str(err))
+            return
         # correcting dose factor
         # dose_factor = rescaleSlope * doseCalibraFactor
 
@@ -98,18 +110,15 @@ class Dcm2bids:
                              sub_name='sub-001',
                              func_name='pet',
                              task_name='rest'):
-        """
-        :param series_dicom_root:
-        :param study_root:
-        :param sub_name:
-        :param func_name:
-        :param task_name:
-        :return:
-        """
         # find udcm2bids tags and calc convert factor
+        func_root = os.path.join(sub_root, func_name)
+        bqml_nii_file = os.path.join(func_root,
+                                     sub_name + '_task-' + task_name + '_PET-BQML.nii.gz')
+        suvbw_nii_file = bqml_nii_file.replace('_PET-BQML', '_PET-SUVbw')
+        suvbw_json_file = suvbw_nii_file.replace('.nii.gz', '.json')
+        if os.path.exists(suvbw_nii_file): return
         suv_factor = []
         acqdatetime = []
-        suvbw_file_list =[]
         dicom_files = glob(os.path.join(series_dicom_root, '*.dcm'))
         for i, file in enumerate(dicom_files):
             ds = pydicom.read_file(file, stop_before_pixels=False)
@@ -118,11 +127,8 @@ class Dcm2bids:
                 acqdatetime.append(dt)
                 suv_factor.append(self._calc_uih_pet_suvbw_factor(ds))
         # convert to bids
-        func_root = os.path.join(sub_root, func_name)
         if not os.path.isdir(func_root): os.mkdir(func_root)
         # check whether exist or not
-        bqml_nii_file = os.path.join(func_root,
-                                     sub_name + '_task-' + task_name + '_PET-BQML.nii.gz')
         if not os.path.exists(bqml_nii_file):
             devnull = open(os.devnull, 'w')
             subprocess.call(['dcm2niix', '-b', 'y', '-z', 'y',
@@ -130,10 +136,6 @@ class Dcm2bids:
                              '-o', func_root, series_dicom_root],
                             stdout=devnull, stderr=subprocess.STDOUT)
         # convert bqml to suv_bw with suv_factor
-        suvbw_nii_file = bqml_nii_file.replace('_PET-BQML', '_PET-SUVbw')
-        suvbw_file_list.append(suvbw_nii_file)
-        suvbw_json_file = suvbw_nii_file.replace('.nii.gz', '.json')
-        if os.path.exists(suvbw_nii_file): return
         nib_img_bqml = nib.load(bqml_nii_file)
         if len(suv_factor) > 1:
             nib_3d_imgs_bqml = nib.four_to_three(nib_img_bqml)
@@ -157,7 +159,7 @@ class Dcm2bids:
                        'acquisition_time': acqdatetime},
                       f_json,
                       indent=4)
-        return suvbw_file_list
+        return 
 
     # ----------------------------------------------------------------------------------------
     #
@@ -166,33 +168,20 @@ class Dcm2bids:
                         func_name='func',
                         task_name='rest',
                         series_name='T1W'):
-        """
-        :param series_dicom_root:
-        :param sub_root:
-        :param sub_name:
-        :param func_name:
-        :param task_name:
-        :param series_name:
-        :return:
-        """
-        generic_file_list = []
-        dicom_files = glob(os.path.join(series_dicom_root, '*.dcm'))
-        for i, file in enumerate(dicom_files):
-            ds = pydicom.read_file(file, stop_before_pixels=False)
-            dt = str(ds.AcquisitionDateTime)[:14]
-        # convert to bids
-        func_root = os.path.join(sub_root, func_name)
-        if not os.path.isdir(func_root): os.mkdir(func_root)
         # check whether exist
+        func_root = os.path.join(sub_root, func_name)
         nii_file = os.path.join(func_root, sub_name + '_task-' + task_name + '_' + series_name + '.nii.gz')
         print(str(nii_file))
-        if os.path.exists(nii_file): return generic_file_list
+        if os.path.exists(nii_file): return 
+        dicom_files = glob(os.path.join(series_dicom_root, '*.dcm'))
+        # convert to bids
+        if not os.path.isdir(func_root): os.mkdir(func_root)
         devnull = open(os.devnull, 'w')
         subprocess.call(['dcm2niix', '-b', 'y', '-z', 'y',
                          '-f', sub_name + '_task-' + task_name + '_' + series_name,
                          '-o', func_root, series_dicom_root],
                         stdout=devnull, stderr=subprocess.STDOUT)
-        return generic_file_list
+        return 
 
     # -----------------------------------------------------------------------------------
     #
@@ -212,34 +201,36 @@ class Dcm2bids:
         fmri_pet_study_root = self.bids_root
         bids_func_info = self.bids_func_info
         # find the patient root defined as '*_*_*' - UIH specific exported dicom pattern
-        patient_roots = list(set([os.path.dirname(bids_func_info[i]['08_SeriesRoot'])
-                                  for i in range(len(bids_func_info))]))
-        for patient_root in patient_roots:
+        #patient_roots = list(set([os.path.dirname(bids_func_info[i]['08_SeriesRoot'])
+        #                          for i in range(len(bids_func_info))]))
+        i = 0
+        for bids_func in bids_func_info:
+        #for patient_root in patient_roots:
             # create sub bids folders
+            patient_root = os.path.dirname(bids_func['08_SeriesRoot'])
             patient_name = basename(patient_root)
             sub_name = 'sub-' + str(patient_name.split('_')[1])
             sub_root = os.path.join(fmri_pet_study_root, sub_name)
             if not os.path.exists(sub_root): os.mkdir(sub_root)
-            series_descriptions = os.listdir(patient_root)
-            for bids_func in bids_func_info:
-                i = 0
-                for series_description in series_descriptions:
-                    if not bids_func.get('05_SeriesDescription') in series_description: continue
-                    print('working on %s - %s' % (sub_name, series_description))
-                    try:
-                        dyn_sub_name = sub_name
-                        dyn_sub_name + '-{:02d}'.format(i)
-                        series_dicom_root = os.path.join(patient_root, series_description)
-                        if bids_func.get('10_Type') != 'PET' and bids_func.get('10_Type') != 'PT':
-                            generic_file_list = self._save_2_generic(series_dicom_root, sub_root, dyn_sub_name,
-                                            func_name=str(bids_func.get('11_Func')),
-                                            task_name=str(bids_func.get('12_Task')),
-                                            series_name=str(bids_func.get('05_SeriesDescription')))
-                        else:
-                            suvbw_file_list = self._save_2_pet_suv_bqml(series_dicom_root, sub_root, dyn_sub_name,
-                                                 func_name=bids_func.get('11_Func'),
-                                                 task_name=bids_func.get('12_Task'))
-                        i += 1
-                    except:
-                        print('failed to convert %s - %s' % (sub_name, series_description))
+            series_description = bids_func.get('08_SeriesRoot') #os.listdir(patient_root)
+            #i = 0
+                #for series_description in series_descriptions:
+            #if not bids_func.get('05_SeriesDescription') in series_description: continue
+            print('working on %s - %s' % (sub_name, series_description))
+            try:
+                dyn_sub_name = sub_name
+                dyn_sub_name + '-{:02d}'.format(i)
+                series_dicom_root = os.path.join(patient_root, series_description)
+                if bids_func.get('10_Type') != 'PET' and bids_func.get('10_Type') != 'PT':
+                    self._save_2_generic(series_dicom_root, sub_root, dyn_sub_name,
+                                    func_name=str(bids_func.get('11_Func')),
+                                    task_name=str(bids_func.get('12_Task')),
+                                    series_name=str(bids_func.get('05_SeriesDescription')))
+                else:
+                    self._save_2_pet_suv_bqml(series_dicom_root, sub_root, dyn_sub_name,
+                                         func_name=bids_func.get('11_Func'),
+                                         task_name=bids_func.get('12_Task'))
+                i += 1
+            except:
+                print('failed to convert %s - %s' % (sub_name, series_description))
         return 
