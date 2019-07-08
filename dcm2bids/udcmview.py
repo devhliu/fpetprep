@@ -77,6 +77,7 @@ def dump_series2json(dcm_root, mode='one_per_dir', series_file_pattern='00000001
         if len(files) <= 0: continue
         print('working on %s' % (subdir))
         # find right patterned files
+        #TODO: verify whether re_pattern is doing anything
         re_pattern = series_file_pattern.replace('*', '.*')
         r_files = []
         if mode != 'one_per_dir': r_files = files

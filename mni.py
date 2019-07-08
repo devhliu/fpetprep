@@ -14,8 +14,8 @@ from pathlib import Path
 class Mni:
     def __init__(self, opts):
         self.resolution = opts.resolution
-        self.input_dir = opts.bids_directory
-        self.output_dir = join(opts.output_directory,'derivatives')
+        self.input_dir = str(opts.bids_directory)
+        self.output_dir = join(str(opts.output_directory),'derivatives')
         if not isdir(self.output_dir): mkdir(self.output_dir)
         if opts.mni_include_sub_directory:
             self.input_nii = list(Path(self.input_dir).glob('sub*/*/*.nii.gz'))
@@ -53,9 +53,9 @@ class Mni:
             root_com = str(self.input_dir).split(os.sep)
             # new_com = list(set(file_com).difference(root_com))
             new_com = [i for i in file_com if i not in root_com]
-            if not os.path.exists(join(self.input_dir,'derivatives','mni_normalize',*new_com)): os.makedirs(join(self.input_dir,'derivatives','mni_normalize',*new_com))
-            if not os.path.exists(join(self.input_dir,'derivatives','mni_smoothed',*new_com)): os.makedirs(join(self.input_dir,'derivatives','mni_smoothed',*new_com))
-            if not os.path.exists(join(self.input_dir,'derivatives','mni_intensity',*new_com)): os.makedirs(join(self.input_dir,'derivatives','mni_intensity',*new_com))
+            #if not os.path.exists(join(self.input_dir,'derivatives','mni_normalize',*new_com)): os.makedirs(join(self.input_dir,'derivatives','mni_normalize',*new_com))
+            #if not os.path.exists(join(self.input_dir,'derivatives','mni_smoothed',*new_com)): os.makedirs(join(self.input_dir,'derivatives','mni_smoothed',*new_com))
+            #if not os.path.exists(join(self.input_dir,'derivatives','mni_intensity',*new_com)): os.makedirs(join(self.input_dir,'derivatives','mni_intensity',*new_com))
             normalized = join(self.input_dir,'derivatives','mni_normalize',*new_com, file_name)
             smoothed = join(self.input_dir, 'derivatives', 'mni_smoothed', *new_com,file_name)
             intensity = join(self.input_dir, 'derivatives', 'mni_intensity', *new_com,file_name)
@@ -106,6 +106,8 @@ class Mni:
             print('run %s' % input_nii_file)
             print('generate %s' % output_nii_file)
             if os.path.exists(output_nii_file): continue
+            dir_name = os.path.dirname(output_nii_file)
+            if not os.path.exists(dir_name): os.makedirs(dir_name)
             mni_nii_file = self.get_mni152_nii_file(input_nii_file)
             nib_img = nib.load(input_nii_file)
             if len(nib_img.shape) > 3:
@@ -148,6 +150,8 @@ class Mni:
             print('run gaussian smooth %s' % (input_nii_file))
             print('generate %s' % output_nii_file)
             if os.path.exists(output_nii_file): continue
+            dir_name = os.path.dirname(output_nii_file)
+            if not os.path.exists(dir_name): os.makedirs(dir_name)
             nib_img = nib.load(input_nii_file)
             if len(nib_img.shape) > 3:
                 nib_3d_imgs = nib.four_to_three(nib_img)
@@ -184,6 +188,8 @@ class Mni:
             print('run intensity normalization %s' % input_nii_file)
             print('generate %s' % output_nii_file)
             if os.path.exists(output_nii_file): continue
+            dir_name = os.path.dirname(output_nii_file)
+            if not os.path.exists(dir_name): os.makedirs(dir_name)
             nib_img = nib.load(input_nii_file)
             if len(nib_img.shape) > 3:
                 nib_3d_imgs = nib.four_to_three(nib_img)

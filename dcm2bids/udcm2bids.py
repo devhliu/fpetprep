@@ -18,12 +18,12 @@ from datetime import timedelta
 
 class Dcm2bids:
     def __init__(self, opts):
-        if not isdir(opts.dicom_directory):
+        if not isdir(str(opts.dicom_directory)):
             print("please provide a valid directory for dicom files")
             #TODO: exit the porgram here
             return
-        self.dicom_root = opts.dicom_directory
-        self.bids_root = opts.bids_directory
+        self.dicom_root = str(opts.dicom_directory)
+        self.bids_root = str(opts.bids_directory)
         self.log_file = join(opts.output_directory,'fpetprep.log')
         if not isdir(self.bids_root): mkdir(self.bids_root)
         head, tail = split(opts.excel_file_path)

@@ -1,5 +1,6 @@
 import nipype.interfaces.gift as gift
 import os
+import numpy as np
 import nibabel as nib
 from os.path import abspath, join, isdir
 from glob import glob
@@ -18,10 +19,9 @@ class Ica:
                 self.in_files = glob(join(opts.ica_file_directory,"*.nii.gz"))
                 # TODO: add list of files option
         elif opts.ica_file_list:
-            if os.path.exist(opts.ica_file_list):
-                file = open(opts.ica_file_list,'r') 
-                self.in_files = file.read() 
-                file.close() #TODO: test this
+            if os.path.exists(str(opts.ica_file_list)):
+                fn = str(opts.ica_file_list) 
+                self.in_files = list(np.loadtxt(fn,delimiter = '\n',dtype='str'))
             else:
                 self.in_files = opts.ica_file_list
         self.out_dir = join(opts.output_directory,'derivatives','ica_results')
