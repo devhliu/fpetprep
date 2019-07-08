@@ -23,6 +23,11 @@ RUN cd /usr/local \
     make \
     make install
 
+#install customized version of nipype; move the required files to fpetprep directory and then copy to nipype directory
+RUN git clone https://github.com/nipy/nipype.git /usr/local/nipype\
+    && cp -R /fpetprep/gift nipype/nipype/interfaces/gift/ \
+    && pip install -e /usr/local/nipype
+
 #install dcm2niix, simpleitk, nilearn, pydicom
 RUN conda install -c simpleitk simpleitk \
     && conda install -c simpleitk/label/dev simpleitk \
@@ -31,11 +36,7 @@ RUN conda install -c simpleitk simpleitk \
     && conda install -c conda-forge nilearn \
     && pip install heudiconv
 
-#install customized version of nipype; move the required files to fpetprep directory and then copy to nipype directory
-RUN cd /usr/local \
-    && git clone https://github.com/nipy/nipype.git \
-    && cp -R /fpetprep/gift nipype/nipype/interfaces/gift \
-    && pip install -e /usr/local/nipype-0.10.0
+
 
 #install GIFT and MCR
 RUN wget http://mialab.mrn.org/software/gift/software/stand_alone/GroupICATv4.0b_standalone_Linux_x86_64.zip \ 
