@@ -16,7 +16,7 @@ class Mni:
         self.resolution = opts.resolution
         self.input_dir = str(opts.bids_directory)
         self.output_dir = join(str(opts.output_directory),'derivatives')
-        if not isdir(self.output_dir): mkdir(self.output_dir)
+        if not isdir(self.output_dir): os.makedirs(self.output_dir)
         if opts.mni_include_sub_directory:
             self.input_nii = list(Path(self.input_dir).glob('sub*/*/*.nii.gz'))
             self.input_nii = [str(file) for file in self.input_nii]
@@ -79,8 +79,10 @@ class Mni:
         self.normalization_intensity()
         if not self.save_intermediate_files:
             print('delete intermediate files')
-            os.system("rm -rf join(self.output_dir, 'mni_normalize')")
-            os.system("rm -rf join(self.output_dir, 'mni_smoothed')")
+            norm_dir = join(self.output_dir, 'mni_normalize')
+            smooth_dir = join(self.output_dir, 'mni_smoothed')
+            os.system("rm -rf " + norm_dir)
+            os.system("rm -rf " + smooth_dir)
             # TODO: add the 4th step; add deletion
 
     def get_mni152_nii_file(self,input_file_name):

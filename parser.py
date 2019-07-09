@@ -82,8 +82,7 @@ def get_parser():
     return parser
 
 
-def main():
-    opts = get_parser().parse_args()
+def analyze(opts):
     if not len(sys.argv) > 1:
         print("please select a valid analysis")
         return
@@ -100,10 +99,10 @@ def main():
         print("converting to BIDS format")
         cov_2_bids = Dcm2bids(opts)
         cov_2_bids.run()
-     if opts.bids_validation:
-            print('Validating BIDS format')
-            exec_env = os.name
-            validate_input_dir(exec_env, opts.file_directory, opts.participant_label)
+    if opts.bids_validation:
+        print('Validating BIDS format')
+        exec_env = os.name
+        validate_input_dir(exec_env, opts.file_directory, opts.participant_label)
     if opts.mni:
         pet_mni = Mni(opts)
         pet_mni.run()
@@ -113,8 +112,10 @@ def main():
             print('the number of ICA component: ' + str(opts.ica_component_number))
         pet_ica = Ica(opts)
         ica_results = pet_ica.run()
+    #if opts.pvc:  
     return
 
 
 if __name__ == "__main__":
-    main()
+    opts = get_parser().parse_args()
+    analyze(opts)

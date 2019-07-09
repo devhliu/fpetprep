@@ -31,8 +31,6 @@ class Dcm2bids:
         else: self.xlsx_file = opts.excel_file_path
         self.mode = opts.mode
         self.pattern = opts.pattern
-        #self.series_file_pattern = opts.series_file_pattern
-        # TODO: figure out how to pass the xlsx file
 
     def generate_excel_file(self):
         dump_series2xlsx(self.dicom_root, self.xlsx_file, self.mode,self.pattern)
