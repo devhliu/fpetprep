@@ -111,7 +111,6 @@ COPY . /home/fpetprep
 
 #RUN useradd -m -s /bin/bash -G users fpetprep           
 
-
 #install customized version of nipype; move the required files to fpetprep directory and then copy to nipype directory
 RUN cp -R //home/fpetprep/gift /usr/local/nipype/nipype/interfaces/gift/ \
     && pip install -e /usr/local/nipype

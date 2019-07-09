@@ -1,11 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import os
 import re
 import subprocess
 from warnings import warn
-from parser import get_parser, analyze
+from argparse import ArgumentParser
+from argparse import RawTextHelpFormatter
+
 
 # Monkey-patch Py2 subprocess
 if not hasattr(subprocess, 'DEVNULL'):
@@ -35,20 +37,44 @@ if not hasattr(subprocess, 'run'):
         return res
     subprocess.run = _run
 
+def getParser():
+    parser = ArgumentParser(description='fPETPrep: PET pre-processing workflow',
+                            formatter_class=RawTextHelpFormatter)
+    parser.add_argument('bids_directory',action = 'store', type=str,
+                        help= 'root folder for your BIDS format data')
+    # options for storing output
+    p_output = parser.add_argument_group('Options for specify where to store output')
+    p_output.add_argument('--output_directory', required = False, action='store', default=[],type=str,
+                        help='directory to store output')
+
+    # bids conversion & suv calculation
+    #TODO: add help
+    p_bids_conversion = parser.add_argument_group('Options for BIDS format conversion')
+    p_bids_conversion.add_argument('--excel_file_path',action='store', required='--convert2bids' in sys.argv, type=str)
+    # bids validation
+    p_bids_validate = parser.add_argument_group('Options for BIDS format validation')
+    p_ica = parser.add_argument_group('Options for running ICA ')
+    p_ica.add_argument('--ica_file_list',required= '--ica' in sys.argv and '--ica_file_directory' not in sys.argv,action='store',type=str)
+    return parser
+
 def main():
-    opts = get_parser().parse_args()
+    parser = getParser()
+    opts, unknown_args = parser.parse_known_args()
     ret = subprocess.run(['docker', 'version', '--format', "{{.Server.Version}}"],
                          stdout=subprocess.PIPE)
     docker_version = ret.stdout.decode('ascii').strip()
     command = ['docker', 'run', '--rm', '-it', '-e',
                'DOCKER_VERSION_8395080871=%s' % docker_version]
-    main_args = []
     if opts.bids_directory:
         command.extend(['-v', ':'.join((opts.bids_directory, opts.bids_directory))])
-        main_args.append('/data')
     if opts.output_directory:
         command.extend(['-v', ':'.join((opts.output_directory, opts.output_directory))])
-        main_args.append('/out')
+    if opts.ica_file_list:
+        file_dir = os.path.dirname(opts.ica_file_list)
+        command.extend(['-v', ':'.join((file_dir, file_dir))])
+    if opts.excel_file_path:
+        file_dir = os.path.dirname(opts.excel_file_path)
+        command.extend(['-v', ':'.join((file_dir, file_dir))])
     command.append('test')
     command.extend(sys.argv[1:])
     print("RUNNING: " + ' '.join(command))
@@ -57,4 +83,5 @@ def main():
         print("fPETPrep: Please report errors")
     return ret.returncode
 
-main()
+#if __name__ == '__main__':
+#    sys.exit(main())
