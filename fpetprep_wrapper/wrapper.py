@@ -8,6 +8,10 @@ from warnings import warn
 from argparse import ArgumentParser
 from argparse import RawTextHelpFormatter
 
+MISSING = """
+Image '{}' is missing
+Would you like to download? [Y/n] """
+PKG_PATH = '/usr/local/miniconda/lib/python3.7/site-packages'
 
 # Monkey-patch Py2 subprocess
 if not hasattr(subprocess, 'DEVNULL'):
@@ -42,19 +46,11 @@ def getParser():
                             formatter_class=RawTextHelpFormatter)
     parser.add_argument('bids_directory',action = 'store', type=str,
                         help= 'root folder for your BIDS format data')
-    # options for storing output
-    p_output = parser.add_argument_group('Options for specify where to store output')
-    p_output.add_argument('--output_directory', required = False, action='store', default=[],type=str,
+    p_wrapper = parser.add_argument_group('Options for wrapper (only included those need to be mapped into the container')
+    p_wrapper.add_argument('--output_directory', required = False, action='store', default=[],type=str,
                         help='directory to store output')
-
-    # bids conversion & suv calculation
-    #TODO: add help
-    p_bids_conversion = parser.add_argument_group('Options for BIDS format conversion')
-    p_bids_conversion.add_argument('--excel_file_path',action='store', required='--convert2bids' in sys.argv, type=str)
-    # bids validation
-    p_bids_validate = parser.add_argument_group('Options for BIDS format validation')
-    p_ica = parser.add_argument_group('Options for running ICA ')
-    p_ica.add_argument('--ica_file_list',required= '--ica' in sys.argv and '--ica_file_directory' not in sys.argv,action='store',type=str)
+    p_wrapper.add_argument('--excel_file_path',action='store', required='--convert2bids' in sys.argv, type=str)
+    p_wrapper.add_argument('--ica_file_list',required= '--ica' in sys.argv and '--ica_file_directory' not in sys.argv,action='store',type=str)
     return parser
 
 def main():
