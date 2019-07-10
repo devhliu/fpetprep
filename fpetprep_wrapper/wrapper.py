@@ -49,6 +49,8 @@ def getParser():
     p_wrapper = parser.add_argument_group('Options for wrapper (only included those need to be mapped into the container')
     p_wrapper.add_argument('--output_directory', required = False, action='store', default=[],type=str,
                         help='directory to store output')
+    p_wrapper.add_argument('--dicom_directory', required='--convert2bids' in sys.argv or '--generate_excel_file' in sys.argv,
+                                   action='store', type=str, help='root folder for dicom data')
     p_wrapper.add_argument('--excel_file_path',action='store', required='--convert2bids' in sys.argv, type=str)
     p_wrapper.add_argument('--ica_file_list',required= '--ica' in sys.argv and '--ica_file_directory' not in sys.argv,action='store',type=str)
     return parser
@@ -65,6 +67,8 @@ def main():
         command.extend(['-v', ':'.join((opts.bids_directory, opts.bids_directory))])
     if opts.output_directory:
         command.extend(['-v', ':'.join((opts.output_directory, opts.output_directory))])
+    if opts.dicom_directory:
+        command.extend(['-v', ':'.join((opts.dicom_directory, opts.dicom_directory))])
     if opts.ica_file_list:
         file_dir = os.path.dirname(opts.ica_file_list)
         command.extend(['-v', ':'.join((file_dir, file_dir))])
