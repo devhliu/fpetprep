@@ -32,10 +32,6 @@ class Mni:
 #       self.intensity_norm_nii = [join(self.output_dir,'mni_intensity_norm', basename(file)) for file in self.smoothed_nii]
         # self.dyn_group_nii = join(self.root_dir, 'dyn_group.nii')
         self.save_intermediate_files = opts.save_intermediate_files
-        # if opts.save_intermediate_files:
-        #            self.save_intermediate_files = opts.save_intermediate_files
-        #        else: 
-        #            self.save_intermediate_files = True
 
     def generate_file_list(self):
         if not isdir(join(self.output_dir,'mni_normalize')):
@@ -49,16 +45,14 @@ class Mni:
         intensity_norm_nii = []
         for file in self.input_nii:
             file_dir, file_name = os.path.split(file)
+            splitext(file_name)[0].rstrip('.nii') + '_mni_normalize.nii' + splitext(file_name)[1]
             file_com = file_dir.split(os.sep)
             root_com = str(self.input_dir).split(os.sep)
             # new_com = list(set(file_com).difference(root_com))
             new_com = [i for i in file_com if i not in root_com]
-            #if not os.path.exists(join(self.input_dir,'derivatives','mni_normalize',*new_com)): os.makedirs(join(self.input_dir,'derivatives','mni_normalize',*new_com))
-            #if not os.path.exists(join(self.input_dir,'derivatives','mni_smoothed',*new_com)): os.makedirs(join(self.input_dir,'derivatives','mni_smoothed',*new_com))
-            #if not os.path.exists(join(self.input_dir,'derivatives','mni_intensity',*new_com)): os.makedirs(join(self.input_dir,'derivatives','mni_intensity',*new_com))
-            normalized = join(self.input_dir,'derivatives','mni_normalize',*new_com, file_name)
-            smoothed = join(self.input_dir, 'derivatives', 'mni_smoothed', *new_com,file_name)
-            intensity = join(self.input_dir, 'derivatives', 'mni_intensity', *new_com,file_name)
+            normalized = join(self.input_dir,'derivatives','mni_normalize',*new_com, splitext(file_name)[0].rstrip('.nii') + '_mni_normalize.nii' + splitext(file_name)[1])
+            smoothed = join(self.input_dir, 'derivatives', 'mni_smoothed', *new_com,splitext(file_name)[0].rstrip('.nii') + '_mni_smoothed.nii' + splitext(file_name)[1])
+            intensity = join(self.input_dir, 'derivatives', 'mni_intensity', *new_com,splitext(file_name)[0].rstrip('.nii') + '_mni_intensity.nii' + splitext(file_name)[1])
             normalized_nii.append(normalized)
             smoothed_nii.append(smoothed)
             intensity_norm_nii.append(intensity)

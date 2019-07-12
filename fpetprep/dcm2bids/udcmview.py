@@ -22,6 +22,9 @@ from glob import glob
 from pydicom.misc import is_dicom
 
 def edit_xlsx(xlsx_file):
+    """
+    sphiniix
+    """
     xls = ExcelFile(xlsx_file)
     df = xls.parse(xls.sheet_names[0])
     descrips = df['05_SeriesDescription'].to_list()
