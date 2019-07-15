@@ -5,6 +5,7 @@ from argparse import RawTextHelpFormatter
 import sys
 from ica import Ica
 from mni import Mni
+from suvr import Suvr
 from dcm2bids.udcm2bids import Dcm2bids
 #from utils.bids_validate import validate_input_dir
 #bids validator is commented for now
@@ -58,9 +59,9 @@ def get_parser():
     p_suvr = parser.add_argument_group('Options for SUVR')
     p_suvr.add_argument('--suvr',action ='store_true',default=False,
                         help='Evaluating standard uptake value ratio')
-
+    p_suvr.add_argument('--suvr_resolution', required='--suvr' in sys.argv and '--resolution' not in sys.argv, action='store',default=[],
+                       choices = ['iso1mm','iso2mm'])
     #TODO: implement suvr
-
     # PVC
     p_pvc = parser.add_argument_group('Options for partial volume correction')
     p_pvc.add_argument('--pvc', action='store_true', default=False, help='perform partial volume correction')
@@ -112,7 +113,9 @@ def analyze(opts):
             print('the number of ICA component: ' + str(opts.ica_component_number))
         pet_ica = Ica(opts)
         ica_results = pet_ica.run()
-    #if opts.pvc:  
+    if opts.suvr:
+        suvr = Suvr(opts)
+        suvr.run()
     return
 
 
