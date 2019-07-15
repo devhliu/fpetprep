@@ -69,11 +69,13 @@ def get_parser():
     # TODO: add help
     # ica analysis
     p_ica = parser.add_argument_group('Options for running ICA ')
+    p_ica.add_argument('--ica_temp',required=False,action='store_true')
+    p_ica.add_argument('--ica_temp_path',required=False,default=[],action='store',type=str)
     p_ica.add_argument('--ica', required=False, action ='store_true')
     p_ica.add_argument('--ica_file_directory',required=False,action='store',type=str)
     p_ica.add_argument('--ica_include_sub_directory', action='store_true', default=False,
                        help='include files in the sub-directory, make sure subject root directory start with sub')
-    p_ica.add_argument('--ica_file_list',required= '--ica' in sys.argv and '--ica_file_directory' not in sys.argv,action='store',type=str)
+    p_ica.add_argument('--ica_file_list',required= ('--ica' in sys.argv or '--ica_temp' in sys.argv) and '--ica_file_directory' not in sys.argv,action='store',type=str)
     p_ica.add_argument('--ica_modality',required = False, action='store',default='PET',choices = ['PET','MR'])
     p_ica.add_argument('--algorithm', required=False, action ='store', default='Infomax',
                        choices=['Infomax','FastICA','Constrained_ICA','ERICA', 'SIMBEC', 'EVD', 'JADE','AMUSE', 'SDD', 'Semi_blind'],
@@ -107,15 +109,18 @@ def analyze(opts):
     if opts.mni:
         pet_mni = Mni(opts)
         pet_mni.run()
+    if opts.ica_temp:
+        ica_temp = Ica(opts)
+        ica_temp.generate_ica_template()
+    if opts.suvr:
+        suvr = Suvr(opts)
+        suvr.run()
     if opts.ica:
         print("selected " + str(opts.algorithm) + ' for ICA analysis')
         if opts.ica_component_number:
             print('the number of ICA component: ' + str(opts.ica_component_number))
         pet_ica = Ica(opts)
         ica_results = pet_ica.run()
-    if opts.suvr:
-        suvr = Suvr(opts)
-        suvr.run()
     return
 
 

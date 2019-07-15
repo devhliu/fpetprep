@@ -33,14 +33,6 @@ class Suvr:
         if not isdir(self.output_dir):
             os.makedirs(self.output_dir)
         suvr_nii = [file.replace('mni_intensity','suvr') for file in self.input_nii]
-
-        '''for file in self.input_nii:
-            file_dir, file_name = os.path.split(file)
-            file_com = file_dir.split(os.sep)
-            root_com = str(self.input_dir).split(os.sep)
-            new_com = [i for i in file_com if i not in root_com]
-            suvr = join(self.output_dir,*new_com, splitext(file_name)[0].rstrip('.nii') + '_suvr.nii' + splitext(file_name)[1])
-            suvr_nii.append(suvr)'''
         return suvr_nii
 
     def run(self):
@@ -56,23 +48,7 @@ class Suvr:
             reference_vol = nib.load(self.reference)
             reference = reference_vol.get_data()
             ndim = len(pet.shape)
-            vol = pet
-            '''
-            if ndim > 3 :
-                if not isdefined(self.start_time) : 
-                    start_time=0
-                else :
-                    start_time=self.start_time
-                if not isdefined(self.end_time) : 
-                    end_time=header['Time']['FrameTimes']['Values'][-1][1]
-                else :
-                    end_time=self.end_time
-                try : 
-                    time_frames = [ float(s) for s,e in  header['Time']["FrameTimes"]["Values"] if s >= start_time and e <= end_time ]
-                except ValueError :
-                    time_frames = [1.]
-                vol = simps( pet, time_frames, axis=3)'''
-            
+            vol = pet            
             idx = reference > 0
             ref = np.mean(vol[idx])
             print("SUVR Reference = ", ref)

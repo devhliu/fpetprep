@@ -1,5 +1,6 @@
 import nipype.interfaces.gift as gift
 import os
+import logging
 import numpy as np
 import nibabel as nib
 from os.path import abspath, join, isdir
@@ -14,7 +15,7 @@ class Ica:
     def __init__(self,opts):
         if opts.ica_file_directory: 
             if opts.ica_include_sub_directory:
-                self.in_files = glob(join(opts.ica_file_directory, 'sub*/*',"*.nii.gz"))
+                self.in_files = glob(join(opts.ica_file_directory, 'sub*/staticPET',"*.nii.gz"))
             else:
                 self.in_files = glob(join(opts.ica_file_directory,"*.nii.gz"))
                 # TODO: add list of files option
@@ -24,7 +25,8 @@ class Ica:
                 self.in_files = list(np.loadtxt(fn,delimiter = '\n',dtype='str'))
             else:
                 self.in_files = opts.ica_file_list
-        self.out_dir = join(opts.output_directory,'derivatives','ica_results')
+        if opts.output_directory: self.out_dir = join(opts.output_directory)
+        else:join(opts.bids_directory,'derivatives','ica_results')
         if not os.path.exists(self.out_dir): os.makedirs(self.out_dir)
         if opts.ica_component_number != 0:  # if specify # for ica component, then set to estimation
             self.dim = opts.ica_component_number
@@ -38,13 +40,35 @@ class Ica:
             self.process_file = self.combine_multiple_PET_subjects() 
         else:
             self.process_file = self.in_files
-    
+        if opts.ica_temp_path: self.template = opts.ica_temp_path
+        else: self.template = generate_template()
     
     def combine_multiple_PET_subjects(self):
         combined_img = join(self.out_dir,'combined_group.nii.gz')
         new_img = concat_imgs(self.in_files)
         nib.save(new_img, combined_img)
         return combined_img
+
+
+    def generate_template(temp_file_name):
+        eg = nib.load(self.in_files[0])
+        sumV = zero(eg.get_data().shape)
+        for file in self.in_files:
+            try:
+                pet = nib.load(file)
+                sumV = sumV + pet
+            except valueError as err:
+                printMessage = 'Dimension mismatch %s.'%(file)
+                print(printMessage)
+                logging.basicConfig(filename=self.log_file, level=logging.DEBUG, 
+                        format='%(asctime)s %(levelname)s %(name)s %(message)s')
+                logger=logging.getLogger(__name__)
+                #logger.info( )
+                logger.error(printMessage + '\n\t The specific error is: ' + str(err))
+        avg = sumV /len(self.in_files)
+        out = nib.Nifti1Image(avg, eg.affine)
+        out.to_filename(join(self.out_dir,'generate_template','temp_file_name','.nii.gz'))
+        return
 
     def run(self):
         # setup GIFT path
@@ -57,6 +81,8 @@ class Ica:
         gc.doEstimation = self.do_estimate
         print("performing " + str(self.algorithm_name) +  " now")
         gc.inputs.algoType = self.algorithm_int
+        gc.inputs.mask = '/home/kejunli/git/fpetprep/fpetprep/template/mni152_brainmask_iso2mm.nii.gz'
+        gc.inputs.refFiles = self.template
         gc_results = gc.run()
         return gc_results
 
