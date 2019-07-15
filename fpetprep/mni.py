@@ -18,7 +18,7 @@ class Mni:
         self.output_dir = join(str(opts.output_directory),'derivatives')
         if not isdir(self.output_dir): os.makedirs(self.output_dir)
         if opts.mni_include_sub_directory:
-            self.input_nii = list(Path(self.input_dir).glob('sub*/*/*.nii.gz'))
+            self.input_nii = list(Path(self.input_dir).glob('sub*/staticPET/*.nii.gz'))
             self.input_nii = [str(file) for file in self.input_nii]
         else:
             self.input_nii = list(glob(join(self.input_dir, '*.nii.gz')))
