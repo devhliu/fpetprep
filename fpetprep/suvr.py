@@ -15,14 +15,17 @@ class Suvr:
     _suffix = "_suvr" 
     def __init__(self, opts):
         self.input_dir = str(opts.bids_directory)
-        self.output_dir = join(str(opts.output_directory),'derivatives','suvr')
+        if opts.output_directory:
+            self.output_dir = str(opts.output_directory)
+        else:
+            self.output_dir =join(str(opts.bids_directory),'derivatives','suvr')
         input_nii = list(Path(self.input_dir).glob('derivatives/mni_intensity/sub*/*/*-SUVbw_*.nii.gz'))
         self.input_nii = [str(file) for file in input_nii]
         self.out_nii = self.generate_file_list() 
         if opts.resolution:
             self.resolution = opts.resolution
         else:
-            self.resolution = opts.sur_resolution
+            self.resolution = opts.suvr_resolution
         self.reference = self.get_mni152_nii_file()
 
     def get_mni152_nii_file(self):

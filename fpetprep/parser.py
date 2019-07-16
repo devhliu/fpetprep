@@ -35,7 +35,7 @@ def get_parser():
     p_bids_conversion.add_argument('--excel_file_path',action='store', required='--convert2bids' in sys.argv, type=str)
     p_bids_conversion.add_argument('--mode', action='store', required='--generate_excel_file' in sys.argv,
                                    choices = ['one_per_dir', 'multi_per_dir'])
-    p_bids_conversion.add_argument('--pattern', action='store', required='--generate_excel_file' in sys.argv)
+    p_bids_conversion.add_argument('--pattern', action='store', required='--generate_excel_file' in sys.argv and 'one_per_dir' in sys.argv)
     # bids validation
     p_bids_validate = parser.add_argument_group('Options for BIDS format validation')
     p_bids_validate.add_argument('--bids-validation', '--bids_validation',action='store_true', default=False,
@@ -85,12 +85,10 @@ def get_parser():
     return parser
 
 
-def analyze(opts):
+def parse_input(opts):
     if not len(sys.argv) > 1:
         print("please select a valid analysis")
         return
-    if not opts.output_directory:
-        opts.output_directory = opts.bids_directory
     if opts.heudiconv:
         print(opts.heudiconv)
         os.system(opts.heudiconv)
@@ -126,4 +124,4 @@ def analyze(opts):
 
 if __name__ == "__main__":
     opts = get_parser().parse_args()
-    analyze(opts)
+    parse_input(opts)

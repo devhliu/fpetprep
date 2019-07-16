@@ -91,7 +91,7 @@ RUN conda install -c simpleitk simpleitk \
     && conda install -c conda-forge nilearn \
     && conda build purge-all; sync \
     && conda clean -tipsy && sync \
-    && pip install heudiconv
+    && pip install heudiconv xlrd openpyxl
 
 
 #install GIFT and MCR
@@ -104,18 +104,19 @@ RUN apt-get install unzip \
     && cd /usr/local/MATLAB \
     && ./install -mode silent -agreeToLicense yes -destinationFolder /usr/local/MATLAB \
     && git clone https://github.com/nipy/nipype.git /usr/local/nipype
-
-WORKDIR /home/fpetprep
+ 
+ 
 ENV HOME = "/home/fpetprep"
 COPY . /home/fpetprep
 
 #RUN useradd -m -s /bin/bash -G users fpetprep           
+WORKDIR /tmp/
 
 #install customized version of nipype; move the required files to fpetprep directory and then copy to nipype directory
 RUN cp -R //home/fpetprep/gift /usr/local/nipype/nipype/interfaces/gift/ \
     && pip install -e /usr/local/nipype
 
-ENTRYPOINT ["python", "parser.py"]
+ENTRYPOINT ["python", "/home/fpetprep/parser.py"]
 
 
 

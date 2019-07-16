@@ -15,13 +15,13 @@ class Mni:
     def __init__(self, opts):
         self.resolution = opts.resolution
         self.input_dir = str(opts.bids_directory)
-        if not opts.output_directory:
-             self.output_dir = join(str(opts.output_directory),'derivatives')
+        if opts.output_directory:
+             self.output_dir = opts.output_directory
         else:
-            self.out_dir = opts.output_directory
+            self.output_dir = join(str(opts.bids_directory),'derivatives')
         if not isdir(self.output_dir): os.makedirs(self.output_dir)
         if opts.mni_include_sub_directory:
-            self.input_nii = list(Path(self.input_dir).glob('sub*/staticPET/*.nii.gz'))
+            self.input_nii = list(Path(self.input_dir).glob('sub*/*/*.nii.gz'))
             self.input_nii = [str(file) for file in self.input_nii]
         else:
             self.input_nii = list(glob(join(self.input_dir, '*.nii.gz')))
