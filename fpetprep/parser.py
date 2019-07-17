@@ -5,6 +5,7 @@ from argparse import RawTextHelpFormatter
 import sys
 from ica import Ica
 from mni import Mni
+from suvr import Suvr
 from dcm2bids.udcm2bids import Dcm2bids
 #from utils.bids_validate import validate_input_dir
 #bids validator is commented for now
@@ -34,7 +35,7 @@ def get_parser():
     p_bids_conversion.add_argument('--excel_file_path',action='store', required='--convert2bids' in sys.argv, type=str)
     p_bids_conversion.add_argument('--mode', action='store', required='--generate_excel_file' in sys.argv,
                                    choices = ['one_per_dir', 'multi_per_dir'])
-    p_bids_conversion.add_argument('--pattern', action='store', required='--generate_excel_file' in sys.argv)
+    p_bids_conversion.add_argument('--pattern', action='store', required='--generate_excel_file' in sys.argv and 'one_per_dir' in sys.argv)
     # bids validation
     p_bids_validate = parser.add_argument_group('Options for BIDS format validation')
     p_bids_validate.add_argument('--bids-validation', '--bids_validation',action='store_true', default=False,
@@ -58,9 +59,9 @@ def get_parser():
     p_suvr = parser.add_argument_group('Options for SUVR')
     p_suvr.add_argument('--suvr',action ='store_true',default=False,
                         help='Evaluating standard uptake value ratio')
-
+    p_suvr.add_argument('--suvr_resolution', required='--suvr' in sys.argv and '--resolution' not in sys.argv, action='store',default=[],
+                       choices = ['iso1mm','iso2mm'])
     #TODO: implement suvr
-
     # PVC
     p_pvc = parser.add_argument_group('Options for partial volume correction')
     p_pvc.add_argument('--pvc', action='store_true', default=False, help='perform partial volume correction')
@@ -68,11 +69,13 @@ def get_parser():
     # TODO: add help
     # ica analysis
     p_ica = parser.add_argument_group('Options for running ICA ')
+    p_ica.add_argument('--ica_temp',required=False,action='store_true')
+    p_ica.add_argument('--ica_temp_path',required=False,default=[],action='store',type=str)
     p_ica.add_argument('--ica', required=False, action ='store_true')
     p_ica.add_argument('--ica_file_directory',required=False,action='store',type=str)
     p_ica.add_argument('--ica_include_sub_directory', action='store_true', default=False,
                        help='include files in the sub-directory, make sure subject root directory start with sub')
-    p_ica.add_argument('--ica_file_list',required= '--ica' in sys.argv and '--ica_file_directory' not in sys.argv,action='store',type=str)
+    p_ica.add_argument('--ica_file_list',required= ('--ica' in sys.argv or '--ica_temp' in sys.argv) and '--ica_file_directory' not in sys.argv,action='store',type=str)
     p_ica.add_argument('--ica_modality',required = False, action='store',default='PET',choices = ['PET','MR'])
     p_ica.add_argument('--algorithm', required=False, action ='store', default='Infomax',
                        choices=['Infomax','FastICA','Constrained_ICA','ERICA', 'SIMBEC', 'EVD', 'JADE','AMUSE', 'SDD', 'Semi_blind'],
@@ -82,12 +85,10 @@ def get_parser():
     return parser
 
 
-def analyze(opts):
+def parse_input(opts):
     if not len(sys.argv) > 1:
         print("please select a valid analysis")
         return
-    if not opts.output_directory:
-        opts.output_directory = opts.bids_directory
     if opts.heudiconv:
         print(opts.heudiconv)
         os.system(opts.heudiconv)
@@ -106,16 +107,21 @@ def analyze(opts):
     if opts.mni:
         pet_mni = Mni(opts)
         pet_mni.run()
+    if opts.ica_temp:
+        ica_temp = Ica(opts)
+        ica_temp.generate_ica_template()
+    if opts.suvr:
+        suvr = Suvr(opts)
+        suvr.run()
     if opts.ica:
         print("selected " + str(opts.algorithm) + ' for ICA analysis')
         if opts.ica_component_number:
             print('the number of ICA component: ' + str(opts.ica_component_number))
         pet_ica = Ica(opts)
         ica_results = pet_ica.run()
-    #if opts.pvc:  
     return
 
 
 if __name__ == "__main__":
     opts = get_parser().parse_args()
-    analyze(opts)
+    parse_input(opts)

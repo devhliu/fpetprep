@@ -15,10 +15,13 @@ class Mni:
     def __init__(self, opts):
         self.resolution = opts.resolution
         self.input_dir = str(opts.bids_directory)
-        self.output_dir = join(str(opts.output_directory),'derivatives')
+        if opts.output_directory:
+             self.output_dir = opts.output_directory
+        else:
+            self.output_dir = join(str(opts.bids_directory),'derivatives')
         if not isdir(self.output_dir): os.makedirs(self.output_dir)
         if opts.mni_include_sub_directory:
-            self.input_nii = list(Path(self.input_dir).glob('sub*/staticPET/*.nii.gz'))
+            self.input_nii = list(Path(self.input_dir).glob('sub*/*/*.nii.gz'))
             self.input_nii = [str(file) for file in self.input_nii]
         else:
             self.input_nii = list(glob(join(self.input_dir, '*.nii.gz')))
@@ -27,10 +30,6 @@ class Mni:
         # example for input_root: static_suv_niis or dyn_suv_niis
         self.gaussian_filter = tuple(opts.gaussian_filter)
         self.normalized_nii, self.smoothed_nii, self.intensity_norm_nii = self.generate_file_list()
-#       self.normalized_nii = [join(self.output_dir,'mni_normalize', basename(file)) for file in self.input_nii]
-#       self.smoothed_nii = [join(self.output_dir,'mni_gaussian', basename(file)) for file in self.normalized_nii]
-#       self.intensity_norm_nii = [join(self.output_dir,'mni_intensity_norm', basename(file)) for file in self.smoothed_nii]
-        # self.dyn_group_nii = join(self.root_dir, 'dyn_group.nii')
         self.save_intermediate_files = opts.save_intermediate_files
 
     def generate_file_list(self):
@@ -58,9 +57,6 @@ class Mni:
             intensity_norm_nii.append(intensity)
         if not len(normalized_nii) == len(smoothed_nii) or not len(normalized_nii) == len(intensity_norm_nii):
             raise ValueError('Dimension mismatch')
-        # normalized_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_normalize.nii' + splitext(file)[1]) for file in normalized_nii]
-        # smoothed_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_gaussian.nii' + splitext(file)[1]) for file in smoothed_nii]
-        # intensity_norm_nii = [(splitext(file)[0].rstrip('.nii') + '_mni_intensity_norm.nii' + splitext(file)[1]) for file in intensity_norm_nii]
         return normalized_nii, smoothed_nii, intensity_norm_nii
 
 
@@ -77,7 +73,6 @@ class Mni:
             smooth_dir = join(self.output_dir, 'mni_smoothed')
             os.system("rm -rf " + norm_dir)
             os.system("rm -rf " + smooth_dir)
-            # TODO: add the 4th step; add deletion
 
     def get_mni152_nii_file(self,input_file_name):
         base_file_name, _ = splitext(basename(input_file_name))
@@ -91,7 +86,7 @@ class Mni:
         elif 'suvbw_factor' in json_data:
             data_type = 'pet'
         else:
-            raise ValueError('cannot determine what template to use') # TODO: add parser so that user can specify their own
+            raise ValueError('cannot determine which template to use') # TODO: add parser so that user can specify their own
         return os.path.join(os.path.dirname(__file__), 'template',
                             'mni152_' + data_type + '_' + self.resolution + '.nii.gz')
 

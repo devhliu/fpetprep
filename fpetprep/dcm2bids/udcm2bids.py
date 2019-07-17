@@ -78,10 +78,8 @@ class Dcm2bids:
             radionuclideHalfLife = float(radionuclide.RadionuclideHalfLife)
             radionuclideTotalDose = float(radionuclide.RadionuclideTotalDose)
             radionuclideStartDateTime = radionuclide.RadiopharmaceuticalStartDateTime
-
             # calculation of bw factor
             bw_factor = 1000.0 * patientWeight / radionuclideTotalDose
-
             # calculation of decay factor
             acq_datetime_0 = datetime.strptime(str(acqDateTime)[:14], '%Y%m%d%H%M%S')
             acq_datetime_1 = datetime.strptime(str(radionuclideStartDateTime)[:14], '%Y%m%d%H%M%S')
