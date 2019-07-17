@@ -63,7 +63,7 @@ def edit_xlsx(xlsx_file):
     return func_list, task_list
 
 def generate_template(temp_file_name):
-        in_files = glob(join('/home/kejunli/data/PD-bids/derivatives/suvr', 'sub*/PD_control',"*.nii.gz"))
+        in_files = glob(join('/home/kejunli/data/PD-bids/derivatives/suvr', 'sub*/PD',"*.nii.gz"))
         #in_files.extend(glob(join('/home/kejunli/data/test/bids_dir/derivatives/suvr', 'sub*/staticPET',"*noise*.nii.gz")))
         out_dir =  join('/home/kejunli/data/PD-bids/derivatives/','ica_results')
         log_file = join(out_dir,'fpetprep.log')
@@ -91,5 +91,5 @@ def generate_template(temp_file_name):
         return
 #edit_xlsx('/home/kejunli/data/PD-bids/PD.xlsx')
 
-#generate_template('PET_PD_control_temp')
-copy_file()
+generate_template('PET_PD_temp')
+#copy_file()
