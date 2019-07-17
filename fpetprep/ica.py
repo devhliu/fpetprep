@@ -15,7 +15,7 @@ class Ica:
     def __init__(self,opts):
         if opts.ica_file_directory: #TODO: select derivatives sub folder first 
             if opts.ica_include_sub_directory:
-                self.in_files = glob(join(opts.ica_file_directory, 'sub*/PD','*.nii.gz'))
+                self.in_files = glob(join(opts.ica_file_directory, 'sub*/PD_control','*.nii.gz'))
             else:
                 self.in_files = glob(join(opts.ica_file_directory,"*.nii.gz"))
                 # TODO: add list of files option

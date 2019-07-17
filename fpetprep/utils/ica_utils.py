@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import nibabel as nib
-from os.path import abspath, join, isdir
+from os.path import abspath, join, isdir, basename
 from glob import glob
 from nilearn.image import concat_imgs
 import logging, shutil
@@ -29,10 +29,11 @@ def Noise_rest(root_dir):
 def copy_file():
     file_list = glob(join('/home/kejunli/data/PD_PTCT/dcm','*','*','2.44*','*.dcm'))
     #file_list = glob(join("/home/kejunli/data/PD_PTCT/dcm/PD_control/li jia le_020234563_122000/1","*"))
+    #file_list = glob(join('/home/kejunli/BraTS2019Data/Training/LGG','*','*.nii.gz'))
     file_rep = [file.replace(' ','') for file in file_list]
     file_rep = [file.replace('PD_PTCT','PD_PT_only') for file in file_rep]
-    file_rep = [file.replace('/dcm','') for file in file_rep]
-    #file_rep = [file + '.dcm' for file in file_rep]
+    #file_rep = [join('/home/kejunli/BraTS2019Data/Training/LGG',basename(file)) for file in file_list]
+    file_rep = [file + '.dcm' for file in file_rep]
 
     for (src,dest) in zip(file_list,file_rep):
         dir_name = os.path.dirname(dest)
@@ -90,4 +91,5 @@ def generate_template(temp_file_name):
         return
 #edit_xlsx('/home/kejunli/data/PD-bids/PD.xlsx')
 
-generate_template('PET_PD_control_temp')
+#generate_template('PET_PD_control_temp')
+copy_file()
