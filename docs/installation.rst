@@ -1,8 +1,8 @@
--------
+------------
 Installation
--------
+------------
 
-Ways to use fpetprep: 
+Ways to use fpetprep:
 	* Docker container
 	* Manually prepared environment
 
@@ -15,4 +15,4 @@ In order to run fpetprep in a Docker containder. Docker must be installed first.
 
 Manual Installation
 =====================
-required packages: FSL, GIFT, customized nipype with Gift Interface, pydicom, dcm2biix, simpleITK, nilearn, petpvc(not yet requried)
+required packages: FSL, GIFT, customized nipype with Gift Interface, pydicom, dcm2niix, simpleITK, nilearn, petpvc(not yet requried)
