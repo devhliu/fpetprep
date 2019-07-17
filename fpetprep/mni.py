@@ -71,8 +71,8 @@ class Mni:
             print('delete intermediate files')
             norm_dir = join(self.output_dir, 'mni_normalize')
             smooth_dir = join(self.output_dir, 'mni_smoothed')
-            os.system("rm -rf " + norm_dir)
-            os.system("rm -rf " + smooth_dir)
+            shutil.rmtree(norm_dir)
+            shutil.rmtree(smooth_dir)
 
     def get_mni152_nii_file(self,input_file_name):
         base_file_name, _ = splitext(basename(input_file_name))

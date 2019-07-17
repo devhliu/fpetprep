@@ -13,6 +13,7 @@ class Ica:
     algo_type = {'Infomax': 1, 'FastICA': 2, 'ERICA': 3, 'SIMBEC': 4, 'EVD': 5, 'JADE': 6,
                  'AMUSE': 7, 'SDD': 8, 'Semi_blind': 9, 'Constrained_ICA': 10}
     def __init__(self,opts):
+        self.resolution = opts.resolution
         if opts.ica_file_directory: #TODO: select derivatives sub folder first 
             if opts.ica_include_sub_directory:
                 self.in_files = glob(join(opts.ica_file_directory, 'sub*/PD_control','*.nii.gz'))
@@ -62,8 +63,7 @@ class Ica:
         gc.doEstimation = self.do_estimate
         print("performing " + str(self.algorithm_name) +  " now")
         gc.inputs.algoType = self.algorithm_int
-        gc.inputs.mask = '/home/kejunli/git/fpetprep/fpetprep/template/mni152_brainmask_iso2mm.nii.gz' #TODO: change path 
-        #os.path.join(os.path.dirname(__file__), 'template','mni152_brainmask'  + '_' + self.resolution + '.nii.gz')
+        gc.inputs.mask =  os.path.join(os.path.dirname(__file__), 'template','mni152_brainmask'  + '_' + self.resolution + '.nii.gz')
         gc.inputs.refFiles = self.template
         gc_results = gc.run()
         return gc_results

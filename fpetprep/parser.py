@@ -19,10 +19,11 @@ def get_parser():
     parser.add_argument('bids_directory',action = 'store', type=str,
                         help= 'root folder for your BIDS format data')
     # options for storing output
-    p_output = parser.add_argument_group('Options for specify where to store output')
-    p_output.add_argument('--output_directory', required = False, action='store', default=[],type=str,
+    p_general = parser.add_argument_group('Options for specify where to store output')
+    p_general.add_argument('--output_directory', required = False, action='store', default=[],type=str,
                         help='directory to store output')
-
+    p_general.add_argument('--resolution', required=False, action='store',default=['iso2mm'],
+                       choices = ['iso1mm','iso2mm'])
     # bids conversion & suv calculation
     #TODO: add help
     p_bids_conversion = parser.add_argument_group('Options for BIDS format conversion')
@@ -49,8 +50,6 @@ def get_parser():
                        help = 'perform spatial normalization onto MNI space')
     p_mni.add_argument('--mni_include_sub_directory', action='store_true', default=False,
                        help='include files in the sub-directory, make sure subject root directory start with sub')
-    p_mni.add_argument('--resolution', required='--mni' in sys.argv, action='store',default=[],
-                       choices = ['iso1mm','iso2mm'])
     p_mni.add_argument('--save_intermediate_files', action='store_true', default=False)
     # TODO: add help
     p_mni.add_argument('--gaussian_filter', required = '--mni' in sys.argv, action='store',type=int,nargs=3,
@@ -59,9 +58,6 @@ def get_parser():
     p_suvr = parser.add_argument_group('Options for SUVR')
     p_suvr.add_argument('--suvr',action ='store_true',default=False,
                         help='Evaluating standard uptake value ratio')
-    p_suvr.add_argument('--suvr_resolution', required='--suvr' in sys.argv and '--resolution' not in sys.argv, action='store',default=[],
-                       choices = ['iso1mm','iso2mm'])
-    #TODO: implement suvr
     # PVC
     p_pvc = parser.add_argument_group('Options for partial volume correction')
     p_pvc.add_argument('--pvc', action='store_true', default=False, help='perform partial volume correction')
