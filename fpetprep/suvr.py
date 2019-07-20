@@ -14,6 +14,7 @@ voxelwise=True
 class Suvr:
     _suffix = "_suvr" 
     def __init__(self, opts):
+        self.resolution = opts.resolution
         self.input_dir = str(opts.bids_directory)
         if opts.output_directory:
             self.output_dir = str(opts.output_directory)
@@ -22,10 +23,6 @@ class Suvr:
         input_nii = list(Path(self.input_dir).glob('derivatives/mni_intensity/sub*/*/*-SUVbw_*.nii.gz'))
         self.input_nii = [str(file) for file in input_nii]
         self.out_nii = self.generate_file_list() 
-        if opts.resolution:
-            self.resolution = opts.resolution
-        else:
-            self.resolution = opts.suvr_resolution
         self.reference = self.get_mni152_nii_file()
 
     def get_mni152_nii_file(self):
@@ -46,7 +43,6 @@ class Suvr:
             dir_name = os.path.dirname(output_nii_file)
             if not os.path.exists(dir_name): os.makedirs(dir_name)
             base_file_name, _ = splitext(basename(input_nii_file))
-            #header = json.load(open(join(dirname(input_nii_file),base_file_name.rstrip('.nii') +'.json'), "r"))
             pet = nib.load(input_nii_file).get_data()
             reference_vol = nib.load(self.reference)
             reference = reference_vol.get_data()
