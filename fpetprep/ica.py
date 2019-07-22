@@ -13,6 +13,7 @@ class Ica:
     algo_type = {'Infomax': 1, 'FastICA': 2, 'ERICA': 3, 'SIMBEC': 4, 'EVD': 5, 'JADE': 6,
                  'AMUSE': 7, 'SDD': 8, 'Semi_blind': 9, 'Constrained_ICA': 10}
     def __init__(self,opts):
+        self.group_ica_type = opts.group_ica_type
         self.resolution = opts.resolution
         if opts.ica_file_directory: #TODO: select derivatives sub folder first 
             if opts.ica_include_sub_directory:
@@ -60,8 +61,9 @@ class Ica:
         gc.inputs.out_dir = self.output_directory
         if not self.do_estimate:
             gc.inputs.dim = self.dim
-        gc.doEstimation = self.do_estimate
-        print("performing " + str(self.algorithm_name) +  " now")
+        gc.inputs.doEstimation = self.do_estimate
+        gc.inputs.group_ica_type = self.group_ica_type
+        print("performing " + str(self.algorithm_name) + "on" + gc.inputs.group_ica_type + " dimension now")
         gc.inputs.algoType = self.algorithm_int
         gc.inputs.mask =  os.path.join(os.path.dirname(__file__), 'template','mni152_brainmask'  + '_' + self.resolution + '.nii.gz')
         gc.inputs.refFiles = self.template

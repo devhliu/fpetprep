@@ -65,6 +65,7 @@ def get_parser():
     # TODO: add help
     # ica analysis
     p_ica = parser.add_argument_group('Options for running ICA ')
+    p_ica.add_argument('--group_ica_type',required = False, action = 'store_true',default='spatial',choices = ['spatial','temporal'])
     p_ica.add_argument('--ica_temp',required=False,action='store_true')
     p_ica.add_argument('--ica_temp_path',required=False,default=[],action='store',type=str)
     p_ica.add_argument('--ica', required=False, action ='store_true')
