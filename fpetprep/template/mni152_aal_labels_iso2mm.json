@@ -1,0 +1,582 @@
+[
+  {
+    "Abbreviation": "FAG",
+    "Label_Name": "Precentral_L",
+    "Label_ID": 2001
+  },
+  {
+    "Abbreviation": "FAD",
+    "Label_Name": "Precentral_R",
+    "Label_ID": 2002
+  },
+  {
+    "Abbreviation": "F1G",
+    "Label_Name": "Frontal_Sup_L",
+    "Label_ID": 2101
+  },
+  {
+    "Abbreviation": "F1D",
+    "Label_Name": "Frontal_Sup_R",
+    "Label_ID": 2102
+  },
+  {
+    "Abbreviation": "F1OG",
+    "Label_Name": "Frontal_Sup_Orb_L",
+    "Label_ID": 2111
+  },
+  {
+    "Abbreviation": "F1OD",
+    "Label_Name": "Frontal_Sup_Orb_R",
+    "Label_ID": 2112
+  },
+  {
+    "Abbreviation": "F2G",
+    "Label_Name": "Frontal_Mid_L",
+    "Label_ID": 2201
+  },
+  {
+    "Abbreviation": "F2D",
+    "Label_Name": "Frontal_Mid_R",
+    "Label_ID": 2202
+  },
+  {
+    "Abbreviation": "F2OG",
+    "Label_Name": "Frontal_Mid_Orb_L",
+    "Label_ID": 2211
+  },
+  {
+    "Abbreviation": "F2OD",
+    "Label_Name": "Frontal_Mid_Orb_R",
+    "Label_ID": 2212
+  },
+  {
+    "Abbreviation": "F3OPG",
+    "Label_Name": "Frontal_Inf_Oper_L",
+    "Label_ID": 2301
+  },
+  {
+    "Abbreviation": "F3OPD",
+    "Label_Name": "Frontal_Inf_Oper_R",
+    "Label_ID": 2302
+  },
+  {
+    "Abbreviation": "F3TG",
+    "Label_Name": "Frontal_Inf_Tri_L",
+    "Label_ID": 2311
+  },
+  {
+    "Abbreviation": "F3TD",
+    "Label_Name": "Frontal_Inf_Tri_R",
+    "Label_ID": 2312
+  },
+  {
+    "Abbreviation": "F3OG",
+    "Label_Name": "Frontal_Inf_Orb_L",
+    "Label_ID": 2321
+  },
+  {
+    "Abbreviation": "F3OD",
+    "Label_Name": "Frontal_Inf_Orb_R",
+    "Label_ID": 2322
+  },
+  {
+    "Abbreviation": "ORG",
+    "Label_Name": "Rolandic_Oper_L",
+    "Label_ID": 2331
+  },
+  {
+    "Abbreviation": "ORD",
+    "Label_Name": "Rolandic_Oper_R",
+    "Label_ID": 2332
+  },
+  {
+    "Abbreviation": "SMAG",
+    "Label_Name": "Supp_Motor_Area_L",
+    "Label_ID": 2401
+  },
+  {
+    "Abbreviation": "SMAD",
+    "Label_Name": "Supp_Motor_Area_R",
+    "Label_ID": 2402
+  },
+  {
+    "Abbreviation": "COBG",
+    "Label_Name": "Olfactory_L",
+    "Label_ID": 2501
+  },
+  {
+    "Abbreviation": "COBD",
+    "Label_Name": "Olfactory_R",
+    "Label_ID": 2502
+  },
+  {
+    "Abbreviation": "FMG",
+    "Label_Name": "Frontal_Sup_Medial_L",
+    "Label_ID": 2601
+  },
+  {
+    "Abbreviation": "FMD",
+    "Label_Name": "Frontal_Sup_Medial_R",
+    "Label_ID": 2602
+  },
+  {
+    "Abbreviation": "FMOG",
+    "Label_Name": "Frontal_Med_Orb_L",
+    "Label_ID": 2611
+  },
+  {
+    "Abbreviation": "FMOD",
+    "Label_Name": "Frontal_Med_Orb_R",
+    "Label_ID": 2612
+  },
+  {
+    "Abbreviation": "GRG",
+    "Label_Name": "Rectus_L",
+    "Label_ID": 2701
+  },
+  {
+    "Abbreviation": "GRD",
+    "Label_Name": "Rectus_R",
+    "Label_ID": 2702
+  },
+  {
+    "Abbreviation": "ING",
+    "Label_Name": "Insula_L",
+    "Label_ID": 3001
+  },
+  {
+    "Abbreviation": "IND",
+    "Label_Name": "Insula_R",
+    "Label_ID": 3002
+  },
+  {
+    "Abbreviation": "CIAG",
+    "Label_Name": "Cingulum_Ant_L",
+    "Label_ID": 4001
+  },
+  {
+    "Abbreviation": "CIAD",
+    "Label_Name": "Cingulum_Ant_R",
+    "Label_ID": 4002
+  },
+  {
+    "Abbreviation": "CINMG",
+    "Label_Name": "Cingulum_Mid_L",
+    "Label_ID": 4011
+  },
+  {
+    "Abbreviation": "CINMD",
+    "Label_Name": "Cingulum_Mid_R",
+    "Label_ID": 4012
+  },
+  {
+    "Abbreviation": "CIPG",
+    "Label_Name": "Cingulum_Post_L",
+    "Label_ID": 4021
+  },
+  {
+    "Abbreviation": "CIPD",
+    "Label_Name": "Cingulum_Post_R",
+    "Label_ID": 4022
+  },
+  {
+    "Abbreviation": "HIPPOG",
+    "Label_Name": "Hippocampus_L",
+    "Label_ID": 4101
+  },
+  {
+    "Abbreviation": "HIPPOD",
+    "Label_Name": "Hippocampus_R",
+    "Label_ID": 4102
+  },
+  {
+    "Abbreviation": "PARA_HIPPOG",
+    "Label_Name": "ParaHippocampal_L",
+    "Label_ID": 4111
+  },
+  {
+    "Abbreviation": "PARA_HIPPOD",
+    "Label_Name": "ParaHippocampal_R",
+    "Label_ID": 4112
+  },
+  {
+    "Abbreviation": "AMYGDG",
+    "Label_Name": "Amygdala_L",
+    "Label_ID": 4201
+  },
+  {
+    "Abbreviation": "AMYGDD",
+    "Label_Name": "Amygdala_R",
+    "Label_ID": 4202
+  },
+  {
+    "Abbreviation": "V1G",
+    "Label_Name": "Calcarine_L",
+    "Label_ID": 5001
+  },
+  {
+    "Abbreviation": "V1D",
+    "Label_Name": "Calcarine_R",
+    "Label_ID": 5002
+  },
+  {
+    "Abbreviation": "QG",
+    "Label_Name": "Cuneus_L",
+    "Label_ID": 5011
+  },
+  {
+    "Abbreviation": "QD",
+    "Label_Name": "Cuneus_R",
+    "Label_ID": 5012
+  },
+  {
+    "Abbreviation": "LINGG",
+    "Label_Name": "Lingual_L",
+    "Label_ID": 5021
+  },
+  {
+    "Abbreviation": "LINGD",
+    "Label_Name": "Lingual_R",
+    "Label_ID": 5022
+  },
+  {
+    "Abbreviation": "O1G",
+    "Label_Name": "Occipital_Sup_L",
+    "Label_ID": 5101
+  },
+  {
+    "Abbreviation": "O1D",
+    "Label_Name": "Occipital_Sup_R",
+    "Label_ID": 5102
+  },
+  {
+    "Abbreviation": "O2G",
+    "Label_Name": "Occipital_Mid_L",
+    "Label_ID": 5201
+  },
+  {
+    "Abbreviation": "O2D",
+    "Label_Name": "Occipital_Mid_R",
+    "Label_ID": 5202
+  },
+  {
+    "Abbreviation": "O3G",
+    "Label_Name": "Occipital_Inf_L",
+    "Label_ID": 5301
+  },
+  {
+    "Abbreviation": "O3D",
+    "Label_Name": "Occipital_Inf_R",
+    "Label_ID": 5302
+  },
+  {
+    "Abbreviation": "FUSIG",
+    "Label_Name": "Fusiform_L",
+    "Label_ID": 5401
+  },
+  {
+    "Abbreviation": "FUSID",
+    "Label_Name": "Fusiform_R",
+    "Label_ID": 5402
+  },
+  {
+    "Abbreviation": "PAG",
+    "Label_Name": "Postcentral_L",
+    "Label_ID": 6001
+  },
+  {
+    "Abbreviation": "PAD",
+    "Label_Name": "Postcentral_R",
+    "Label_ID": 6002
+  },
+  {
+    "Abbreviation": "P1G",
+    "Label_Name": "Parietal_Sup_L",
+    "Label_ID": 6101
+  },
+  {
+    "Abbreviation": "P1D",
+    "Label_Name": "Parietal_Sup_R",
+    "Label_ID": 6102
+  },
+  {
+    "Abbreviation": "P2G",
+    "Label_Name": "Parietal_Inf_L",
+    "Label_ID": 6201
+  },
+  {
+    "Abbreviation": "P2D",
+    "Label_Name": "Parietal_Inf_R",
+    "Label_ID": 6202
+  },
+  {
+    "Abbreviation": "GSMG",
+    "Label_Name": "SupraMarginal_L",
+    "Label_ID": 6211
+  },
+  {
+    "Abbreviation": "GSMD",
+    "Label_Name": "SupraMarginal_R",
+    "Label_ID": 6212
+  },
+  {
+    "Abbreviation": "GAG",
+    "Label_Name": "Angular_L",
+    "Label_ID": 6221
+  },
+  {
+    "Abbreviation": "GAD",
+    "Label_Name": "Angular_R",
+    "Label_ID": 6222
+  },
+  {
+    "Abbreviation": "PQG",
+    "Label_Name": "Precuneus_L",
+    "Label_ID": 6301
+  },
+  {
+    "Abbreviation": "PQD",
+    "Label_Name": "Precuneus_R",
+    "Label_ID": 6302
+  },
+  {
+    "Abbreviation": "LPCG",
+    "Label_Name": "Paracentral_Lobule_L",
+    "Label_ID": 6401
+  },
+  {
+    "Abbreviation": "LPCD",
+    "Label_Name": "Paracentral_Lobule_R",
+    "Label_ID": 6402
+  },
+  {
+    "Abbreviation": "NCG",
+    "Label_Name": "Caudate_L",
+    "Label_ID": 7001
+  },
+  {
+    "Abbreviation": "NCD",
+    "Label_Name": "Caudate_R",
+    "Label_ID": 7002
+  },
+  {
+    "Abbreviation": "NLG",
+    "Label_Name": "Putamen_L",
+    "Label_ID": 7011
+  },
+  {
+    "Abbreviation": "NLD",
+    "Label_Name": "Putamen_R",
+    "Label_ID": 7012
+  },
+  {
+    "Abbreviation": "PALLG",
+    "Label_Name": "Pallidum_L",
+    "Label_ID": 7021
+  },
+  {
+    "Abbreviation": "PALLD",
+    "Label_Name": "Pallidum_R",
+    "Label_ID": 7022
+  },
+  {
+    "Abbreviation": "THAG",
+    "Label_Name": "Thalamus_L",
+    "Label_ID": 7101
+  },
+  {
+    "Abbreviation": "THAD",
+    "Label_Name": "Thalamus_R",
+    "Label_ID": 7102
+  },
+  {
+    "Abbreviation": "HESCHLG",
+    "Label_Name": "Heschl_L",
+    "Label_ID": 8101
+  },
+  {
+    "Abbreviation": "HESCHLD",
+    "Label_Name": "Heschl_R",
+    "Label_ID": 8102
+  },
+  {
+    "Abbreviation": "T1G",
+    "Label_Name": "Temporal_Sup_L",
+    "Label_ID": 8111
+  },
+  {
+    "Abbreviation": "T1D",
+    "Label_Name": "Temporal_Sup_R",
+    "Label_ID": 8112
+  },
+  {
+    "Abbreviation": "T1AG",
+    "Label_Name": "Temporal_Pole_Sup_L",
+    "Label_ID": 8121
+  },
+  {
+    "Abbreviation": "T1AD",
+    "Label_Name": "Temporal_Pole_Sup_R",
+    "Label_ID": 8122
+  },
+  {
+    "Abbreviation": "T2G",
+    "Label_Name": "Temporal_Mid_L",
+    "Label_ID": 8201
+  },
+  {
+    "Abbreviation": "T2D",
+    "Label_Name": "Temporal_Mid_R",
+    "Label_ID": 8202
+  },
+  {
+    "Abbreviation": "T2AG",
+    "Label_Name": "Temporal_Pole_Mid_L",
+    "Label_ID": 8211
+  },
+  {
+    "Abbreviation": "T2AD",
+    "Label_Name": "Temporal_Pole_Mid_R",
+    "Label_ID": 8212
+  },
+  {
+    "Abbreviation": "T3G",
+    "Label_Name": "Temporal_Inf_L",
+    "Label_ID": 8301
+  },
+  {
+    "Abbreviation": "T3D",
+    "Label_Name": "Temporal_Inf_R",
+    "Label_ID": 8302
+  },
+  {
+    "Abbreviation": "CERCRU1G",
+    "Label_Name": "Cerebelum_Crus1_L",
+    "Label_ID": 9001
+  },
+  {
+    "Abbreviation": "CERCRU1D",
+    "Label_Name": "Cerebelum_Crus1_R",
+    "Label_ID": 9002
+  },
+  {
+    "Abbreviation": "CERCRU2G",
+    "Label_Name": "Cerebelum_Crus2_L",
+    "Label_ID": 9011
+  },
+  {
+    "Abbreviation": "CERCRU2D",
+    "Label_Name": "Cerebelum_Crus2_R",
+    "Label_ID": 9012
+  },
+  {
+    "Abbreviation": "CER3G",
+    "Label_Name": "Cerebelum_3_L",
+    "Label_ID": 9021
+  },
+  {
+    "Abbreviation": "CER3D",
+    "Label_Name": "Cerebelum_3_R",
+    "Label_ID": 9022
+  },
+  {
+    "Abbreviation": "CER4_5G",
+    "Label_Name": "Cerebelum_4_5_L",
+    "Label_ID": 9031
+  },
+  {
+    "Abbreviation": "CER4_5D",
+    "Label_Name": "Cerebelum_4_5_R",
+    "Label_ID": 9032
+  },
+  {
+    "Abbreviation": "CER6G",
+    "Label_Name": "Cerebelum_6_L",
+    "Label_ID": 9041
+  },
+  {
+    "Abbreviation": "CER6D",
+    "Label_Name": "Cerebelum_6_R",
+    "Label_ID": 9042
+  },
+  {
+    "Abbreviation": "CER7BG",
+    "Label_Name": "Cerebelum_7b_L",
+    "Label_ID": 9051
+  },
+  {
+    "Abbreviation": "CER7BD",
+    "Label_Name": "Cerebelum_7b_R",
+    "Label_ID": 9052
+  },
+  {
+    "Abbreviation": "CER8G",
+    "Label_Name": "Cerebelum_8_L",
+    "Label_ID": 9061
+  },
+  {
+    "Abbreviation": "CER8D",
+    "Label_Name": "Cerebelum_8_R",
+    "Label_ID": 9062
+  },
+  {
+    "Abbreviation": "CER9G",
+    "Label_Name": "Cerebelum_9_L",
+    "Label_ID": 9071
+  },
+  {
+    "Abbreviation": "CER9D",
+    "Label_Name": "Cerebelum_9_R",
+    "Label_ID": 9072
+  },
+  {
+    "Abbreviation": "CER10G",
+    "Label_Name": "Cerebelum_10_L",
+    "Label_ID": 9081
+  },
+  {
+    "Abbreviation": "CER10D",
+    "Label_Name": "Cerebelum_10_R",
+    "Label_ID": 9082
+  },
+  {
+    "Abbreviation": "VER1_2",
+    "Label_Name": "Vermis_1_2",
+    "Label_ID": 9100
+  },
+  {
+    "Abbreviation": "VER3",
+    "Label_Name": "Vermis_3",
+    "Label_ID": 9110
+  },
+  {
+    "Abbreviation": "VER4_5",
+    "Label_Name": "Vermis_4_5",
+    "Label_ID": 9120
+  },
+  {
+    "Abbreviation": "VER6",
+    "Label_Name": "Vermis_6",
+    "Label_ID": 9130
+  },
+  {
+    "Abbreviation": "VER7",
+    "Label_Name": "Vermis_7",
+    "Label_ID": 9140
+  },
+  {
+    "Abbreviation": "VER8",
+    "Label_Name": "Vermis_8",
+    "Label_ID": 9150
+  },
+  {
+    "Abbreviation": "VER9",
+    "Label_Name": "Vermis_9",
+    "Label_ID": 9160
+  },
+  {
+    "Abbreviation": "VER10",
+    "Label_Name": "Vermis_10",
+    "Label_ID": 9170
+  }
+]
