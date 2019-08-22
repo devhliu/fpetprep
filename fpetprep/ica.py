@@ -12,17 +12,17 @@ class Ica:
     matlab_cmd = '/usr/local/gift/GroupICA_standalone/run_groupica.sh /usr/local/MATLAB/mcr2016a/v901'
     algo_type = {'Infomax': 1, 'FastICA': 2, 'ERICA': 3, 'SIMBEC': 4, 'EVD': 5, 'JADE': 6,
                  'AMUSE': 7, 'SDD': 8, 'Semi_blind': 9, 'Constrained_ICA': 10}
-    def __init__(self,opts):
+    def __init__(self,opts): #a wrapper between UI and fpetprep docker should be able to parse and organize the following options properly
         self.group_ica_type = opts.group_ica_type
         self.resolution = opts.resolution
-        if opts.ica_file_directory: #TODO: select derivatives sub folder first 
+        if opts.ica_file_directory: # if the user provided a directory
             if opts.ica_include_sub_directory:
-                self.in_files = glob(join(opts.ica_file_directory, 'sub*/PD_control','*.nii.gz'))
+                self.in_files = glob(join(opts.ica_file_directory, '**/*.nii.gz'), recursive=True) #recursively search all nii file in sub folder
             else:
-                self.in_files = glob(join(opts.ica_file_directory,"*.nii.gz"))
-                # TODO: add list of files option
-        elif opts.ica_file_list:
-            if os.path.exists(str(opts.ica_file_list)):
+                self.in_files = glob(join(opts.ica_file_directory,"*.nii.gz")) #search only in the current folder provided
+        elif opts.ica_file_list: #if the user provied a singlw file
+            filename, file_extention = os.path.splitext(opts.ica_file_list)
+            if os.path.exists(str(opts.ica_file_list) and file_extension.find('.txt') >0):  # if given file exists and is a txt file, load that file for a list of file names
                 fn = str(opts.ica_file_list) 
                 self.in_files = list(np.loadtxt(fn,delimiter = '\n',dtype='str'))
             else:
@@ -30,7 +30,7 @@ class Ica:
         if opts.output_directory: self.output_directory = join(opts.output_directory)
         else:self.output_directory = join(opts.bids_directory,'derivatives','ica_results')
         if not os.path.exists(self.output_directory): os.makedirs(self.output_directory)
-        if opts.ica_component_number != 0:  # if specify # for ica component, then set to estimation
+        if opts.ica_component_number != 0:  # if specify # of ICs, then set to no estimation
             self.dim = opts.ica_component_number
             self.do_estimate = 0
         else:
@@ -63,13 +63,9 @@ class Ica:
             gc.inputs.dim = self.dim
         gc.inputs.doEstimation = self.do_estimate
         gc.inputs.group_ica_type = self.group_ica_type
-        print("performing " + str(self.algorithm_name) + "on" + gc.inputs.group_ica_type + " dimension now")
+        print("performing " + str(self.algorithm_name) + " on" + gc.inputs.group_ica_type + " dimension now")
         gc.inputs.algoType = self.algorithm_int
         gc.inputs.mask =  os.path.join(os.path.dirname(__file__), 'template','mni152_brainmask'  + '_' + self.resolution + '.nii.gz')
         gc.inputs.refFiles = self.template
         gc_results = gc.run()
         return gc_results
-
-    def plot_results(self):
-        # TODO: figure out how to visualize/summarize the ica results
-        return

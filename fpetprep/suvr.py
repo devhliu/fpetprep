@@ -1,7 +1,7 @@
 #adapt from quantification_method_suvr.py from APPIAN 
 #(https://github.com/APPIAN-PET/APPIAN/blob/7f1ae274ac0788bb0d68320f3a730462a5ad56ed/Quantification/methods/quant_method_suvr.py)
 import numpy as np
-import json, os
+import json, os, sys
 import nibabel as nib
 from os.path import join, isdir, basename, splitext, dirname
 from scipy.integrate import simps
@@ -20,23 +20,23 @@ class Suvr:
             self.output_dir = str(opts.output_directory)
         else:
             self.output_dir =join(str(opts.bids_directory),'derivatives','suvr')
-        input_nii = list(Path(self.input_dir).glob('derivatives/mni_intensity/sub*/*/*-SUVbw_*.nii.gz'))
-        self.input_nii = [str(file) for file in input_nii]
-        self.out_nii = self.generate_file_list() 
+        suvbw_list = glob(input_dir +'/**/*SUVbw.nii.gz',recursive=True)
+        if len(suvbw_list) == 0:
+            print('please use convert2bids to convert your dcm files to BIDs first')
+            sys.exit()
+        else:
+            self.input_nii = [str(file) for file in suvbw_list]
         self.reference = self.get_mni152_nii_file()
 
     def get_mni152_nii_file(self):
         return os.path.join(os.path.dirname(__file__), 'template',
                             'mni152_' + 'brainstemmask' + '_' + self.resolution + '.nii.gz')
 
-    def generate_file_list(self):
+    def run(self):
         if not isdir(self.output_dir):
             os.makedirs(self.output_dir)
-        suvr_nii = [file.replace('mni_intensity','suvr') for file in self.input_nii]
-        return suvr_nii
-
-    def run(self):
-        for (input_nii_file,output_nii_file) in zip(self.input_nii, self.out_nii):
+        for input_nii_file in self.input_nii:
+            output_nii_file = file.replace('mni_intensity','suvr')
             print('run %s' % input_nii_file)
             print('generate %s' % output_nii_file)
             if os.path.exists(output_nii_file): continue
@@ -59,3 +59,4 @@ class Suvr:
                 json.dump({'suvr_factor': str(ref)},
                       f_json,indent=4)
         return 
+

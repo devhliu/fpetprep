@@ -24,18 +24,17 @@ def get_parser():
                         help='directory to store output')
     p_general.add_argument('--resolution', required=False, action='store',default=['iso2mm'],
                        choices = ['iso1mm','iso2mm'])
-    # bids conversion & suv calculation
-    #TODO: add help
+    # bids conversion & suvr calculation
     p_bids_conversion = parser.add_argument_group('Options for BIDS format conversion')
-    p_bids_conversion.add_argument('--heudiconv', action='store', type=str, nargs='+',help = 'use heudiconv to convert data. Pass the command directly')
+    p_bids_conversion.add_argument('--heudiconv', action='store', type=str, nargs='+',help = 'use heudiconv to convert your data to BIDS format. Pass the command directly')
     p_bids_conversion.add_argument('--generate_excel_file', action='store_true',default=False,
-                                   help='scan through given directory to generate a sample excel file')
-    p_bids_conversion.add_argument('--convert2bids', action='store_true', default=False)
+                                   help='scan through given directory to generate a sample excel file') 
+    p_bids_conversion.add_argument('--convert2bids', action='store_true', default=False) #if select this, also need to pass the excel file path, dicom directory
     p_bids_conversion.add_argument('--dicom_directory', required='--convert2bids' in sys.argv or '--generate_excel_file' in sys.argv,
                                    action='store', type=str, help='root folder for dicom data')
     p_bids_conversion.add_argument('--excel_file_path',action='store', required='--convert2bids' in sys.argv, type=str)
     p_bids_conversion.add_argument('--mode', action='store', required='--generate_excel_file' in sys.argv,
-                                   choices = ['one_per_dir', 'multi_per_dir'])
+                                   choices = ['one_per_dir', 'multi_per_dir'],help ='specify whether there is only one .dcm file in the directory or multiple') 
     p_bids_conversion.add_argument('--pattern', action='store', required='--generate_excel_file' in sys.argv and 'one_per_dir' in sys.argv)
     # bids validation
     p_bids_validate = parser.add_argument_group('Options for BIDS format validation')
@@ -51,18 +50,16 @@ def get_parser():
     p_mni.add_argument('--mni_include_sub_directory', action='store_true', default=False,
                        help='include files in the sub-directory, make sure subject root directory start with sub')
     p_mni.add_argument('--save_intermediate_files', action='store_true', default=False)
-    # TODO: add help
     p_mni.add_argument('--gaussian_filter', required = '--mni' in sys.argv, action='store',type=int,nargs=3,
-                       help="gaussian filter for smoothing in the format of x x x where x could be any integer value")
+                       help="gaussian filter for smoothing in the format of n n n where n could be any integer value") # example: 3 3 3 
     # SUVR
     p_suvr = parser.add_argument_group('Options for SUVR')
     p_suvr.add_argument('--suvr',action ='store_true',default=False,
                         help='Evaluating standard uptake value ratio')
-    # PVC
-    p_pvc = parser.add_argument_group('Options for partial volume correction')
-    p_pvc.add_argument('--pvc', action='store_true', default=False, help='perform partial volume correction')
-    p_pvc.add_argument('--pvc_mm', action='store', required= '--pvc' in sys.argv, type=int, nargs=3, help='')  #TODO: fix this later
-    # TODO: add help
+    # PVC uncomment this when it is implemented
+    #p_pvc = parser.add_argument_group('Options for partial volume correction')
+    #p_pvc.add_argument('--pvc', action='store_true', default=False, help='perform partial volume correction')
+    #p_pvc.add_argument('--pvc_mm', action='store', required= '--pvc' in sys.argv, type=int, nargs=3, help='')  
     # ica analysis
     p_ica = parser.add_argument_group('Options for running ICA ')
     p_ica.add_argument('--group_ica_type',required = False, action = 'store_true',default='spatial',choices = ['spatial','temporal'])
@@ -82,43 +79,43 @@ def get_parser():
     return parser
 
 
-def parse_input(opts):
+def handle_parsed_input(opts):
     if not len(sys.argv) > 1:
-        print("please select a valid analysis")
+        print("please select a valid analysis") #make sure both directory and analysis is selected
         return
-    if opts.heudiconv:
+    if opts.heudiconv: #if user want to use heudiconv, they need to write their own command line
         print(opts.heudiconv)
         os.system(opts.heudiconv)
-    if opts.generate_excel_file:
+    if opts.generate_excel_file: #generate excel file for BIDS conversion
         print("generating excel file")
         gen_excel = Dcm2bids(opts)
         gen_excel.generate_excel_file()
-    if opts.convert2bids:
+    if opts.convert2bids: #convert to BIDS, need to provide excel file path --> UI: need to send output to an excel file
         print("converting to BIDS format")
         cov_2_bids = Dcm2bids(opts)
         cov_2_bids.run()
-    if opts.bids_validation:
+    if opts.bids_validation: #validate BIDS format; almost never necessary and never tested
         print('Validating BIDS format')
         exec_env = os.name
         validate_input_dir(exec_env, opts.file_directory, opts.participant_label)
-    if opts.mni:
+    if opts.mni: # mni normalization --> for a group of scans, normalize spatially to the same template -> specified 
         pet_mni = Mni(opts)
         pet_mni.run()
-    if opts.ica_temp:
+    if opts.ica_temp:# generate tecmplate for ICA (Independent Component Analysis)
         ica_temp = Ica(opts)
         ica_temp.generate_ica_template()
-    if opts.suvr:
-        suvr = Suvr(opts)
+    if opts.suvr: #standarized uptake value ratio 
+        suvr = Suvr(opts) #normal patient ratio over brainstem; Other patient need different region as baseline --> not yet suppoted
         suvr.run()
-    if opts.ica:
+    if opts.ica: #different algorithms can be used for ICA, optional: specify the numbe of ICs 
         print("selected " + str(opts.algorithm) + ' for ICA analysis')
         if opts.ica_component_number:
-            print('the number of ICA component: ' + str(opts.ica_component_number))
+            print('the number of ICs: ' + str(opts.ica_component_number))
         pet_ica = Ica(opts)
         ica_results = pet_ica.run()
     return
 
 
 if __name__ == "__main__":
-    opts = get_parser().parse_args()
-    parse_input(opts)
+    opts = get_parser().parse_args() 
+    handle_parsed_input(opts)
