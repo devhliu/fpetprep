@@ -28,7 +28,6 @@ class Dcm2bids:
         self.log_file = join(opts.output_directory,'fpetprep.log')
         if not isdir(self.bids_root): mkdir(self.bids_root)
         head, tail = split(opts.excel_file_path)
-        print(opt.excel_file_path)
         if not head: self.xlsx_file = join(opts.output_directory,opts.excel_file_path)
         else: self.xlsx_file = opts.excel_file_path
         self.mode = opts.mode
