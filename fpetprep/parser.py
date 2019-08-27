@@ -63,7 +63,7 @@ def get_parser():
     # ica analysis
     p_ica = parser.add_argument_group('Options for running ICA ')
     p_ica.add_argument('--group_ica_type',required = False, action = 'store',default='spatial',choices = ['spatial','temporal'])
-    p_ica.add_argument('--ica_temp',required=False,action='store_true')
+    #p_ica.add_argument('--ica_temp',required=False,action='store_true') see comment below
     p_ica.add_argument('--ica_temp_path',required=False,default=[],action='store',type=str)
     p_ica.add_argument('--ica', required=False, action ='store_true')
     p_ica.add_argument('--ica_file_directory',required=False,action='store',type=str)
@@ -101,9 +101,9 @@ def handle_parsed_input(opts):
     if opts.mni: # mni normalization --> for a group of scans, normalize spatially to the same template -> specified 
         pet_mni = Mni(opts)
         pet_mni.run()
-    if opts.ica_temp:# generate tecmplate for ICA (Independent Component Analysis)
-        ica_temp = Ica(opts)
-        ica_temp.generate_ica_template()
+    #if opts.ica_temp:# generate tecmplate for ICA (Independent Component Analysis), uncomment when actually implemented, rough structure can be found in ica_utils.py
+    #    ica_temp = Ica(opts)
+    #    ica_temp.generate_ica_template()
     if opts.suvr: #standarized uptake value ratio 
         suvr = Suvr(opts) #normal patient ratio over brainstem; Other patient need different region as baseline --> not yet suppoted
         suvr.run()
