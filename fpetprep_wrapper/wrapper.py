@@ -75,7 +75,7 @@ def main():
     if opts.excel_file_path:
         file_dir = os.path.dirname(opts.excel_file_path)
         command.extend(['-v', ':'.join((file_dir, file_dir))])
-    command.append('test')
+    command.append('uih/fpetprep')
     command.extend(sys.argv[1:])
     print("RUNNING: " + ' '.join(command))
     ret = subprocess.run(command)

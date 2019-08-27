@@ -20,7 +20,7 @@ def get_parser():
                         help= 'root folder for your BIDS format data')
     # options for storing output
     p_general = parser.add_argument_group('Options for specify where to store output')
-    p_general.add_argument('--output_directory', required = False, action='store', default=[],type=str,
+    p_general.add_argument('--output_directory', required = False, action='store', default='',type=str,
                         help='directory to store output')
     p_general.add_argument('--resolution', required=False, action='store',default=['iso2mm'],
                        choices = ['iso1mm','iso2mm'])
@@ -62,7 +62,7 @@ def get_parser():
     #p_pvc.add_argument('--pvc_mm', action='store', required= '--pvc' in sys.argv, type=int, nargs=3, help='')  
     # ica analysis
     p_ica = parser.add_argument_group('Options for running ICA ')
-    p_ica.add_argument('--group_ica_type',required = False, action = 'store_true',default='spatial',choices = ['spatial','temporal'])
+    p_ica.add_argument('--group_ica_type',required = False, action = 'store',default='spatial',choices = ['spatial','temporal'])
     p_ica.add_argument('--ica_temp',required=False,action='store_true')
     p_ica.add_argument('--ica_temp_path',required=False,default=[],action='store',type=str)
     p_ica.add_argument('--ica', required=False, action ='store_true')

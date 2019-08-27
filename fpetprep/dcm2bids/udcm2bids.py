@@ -24,13 +24,16 @@ class Dcm2bids:
             return
         self.dicom_root = str(opts.dicom_directory)
         self.bids_root = str(opts.bids_directory)
+        if not opts.output_directory: opts.output_directory = opts.bids_directory
         self.log_file = join(opts.output_directory,'fpetprep.log')
         if not isdir(self.bids_root): mkdir(self.bids_root)
         head, tail = split(opts.excel_file_path)
+        print(opt.excel_file_path)
         if not head: self.xlsx_file = join(opts.output_directory,opts.excel_file_path)
         else: self.xlsx_file = opts.excel_file_path
         self.mode = opts.mode
-        self.pattern = opts.pattern
+        if opts.pattern: self.pattern = opts.pattern
+        else: self.pattern = '000001.dcm'
 
     def generate_excel_file(self):
         dump_series2xlsx(self.dicom_root, self.xlsx_file, self.mode,self.pattern)

@@ -9,7 +9,7 @@ from nilearn.image import concat_imgs
 
 class Ica:
     # TODO: replace the matlab_cmd with whatever path specified in the docker file during installation
-    matlab_cmd = '/usr/local/gift/GroupICA_standalone/run_groupica.sh /usr/local/MATLAB/mcr2016a/v901'
+    matlab_cmd = '/usr/local/GIFT/GroupICATv4.0b_standalone/run_groupica.sh /usr/local/MATLAB/mcr2016a/v901'
     algo_type = {'Infomax': 1, 'FastICA': 2, 'ERICA': 3, 'SIMBEC': 4, 'EVD': 5, 'JADE': 6,
                  'AMUSE': 7, 'SDD': 8, 'Semi_blind': 9, 'Constrained_ICA': 10}
     def __init__(self,opts): #a wrapper between UI and fpetprep docker should be able to parse and organize the following options properly
@@ -43,7 +43,7 @@ class Ica:
         else:
             self.process_file = self.in_files
         if opts.ica_temp_path: self.template = opts.ica_temp_path
-        else: self.template = generate_template()
+        elif self.algorithm_int == 10: self.template = generate_template()
         self.log_file = join(self.output_directory,'fpetprep.log')
     
     def combine_multiple_PET_subjects(self):
@@ -65,7 +65,7 @@ class Ica:
         gc.inputs.group_ica_type = self.group_ica_type
         print("performing " + str(self.algorithm_name) + " on" + gc.inputs.group_ica_type + " dimension now")
         gc.inputs.algoType = self.algorithm_int
-        gc.inputs.mask =  os.path.join(os.path.dirname(__file__), 'template','mni152_brainmask'  + '_' + self.resolution + '.nii.gz')
-        gc.inputs.refFiles = self.template
+        gc.inputs.mask =  os.path.join(os.path.dirname(__file__), 'template','mni152_brainmask'  + '_' + str(self.resolution[0]) + '.nii.gz')
+        #gc.inputs.refFiles = self.template
         gc_results = gc.run()
         return gc_results

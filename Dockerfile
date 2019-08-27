@@ -116,7 +116,7 @@ WORKDIR /tmp/
 RUN cp -R //home/fpetprep/gift /usr/local/nipype/nipype/interfaces/gift/ \
     && pip install -e /usr/local/nipype
 
-ENTRYPOINT ["python", "/home/fpetprep/parser.py"]
+ENTRYPOINT ["python", "/home/fpetprep/fpetprep/parser.py"]
 
 
 
